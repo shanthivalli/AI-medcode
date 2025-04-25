@@ -22,14 +22,16 @@
 .internalCloseButton { 
   color: $color-text-primary; 
   flex-shrink: 0; 
-  background-color: rgba($color-background, 0.8);
-  border-radius: $border-radius-sm;
+  background: none;
   padding: $spacing-xs;
   &:hover { 
-    color: $color-primary; 
-    background-color: $color-background-hover; 
+    color: $color-primary;
   } 
-  @include focus-visible-ring($color-primary, 1px); 
+  @include focus-visible-ring($color-primary, 1px);
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 }
 .title { margin: 0; font-size: $font-size-xl; font-weight: $font-weight-semibold; text-align: center; flex-grow: 1; padding-left: 40px; padding-right: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .headerSpacer { width: 36px; flex-shrink: 0; visibility: hidden; }
