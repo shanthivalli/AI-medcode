@@ -44,3 +44,16 @@
     min-width: 100px;
   }
 }
+
+.listContent {
+  padding: $spacing-sm;
+  overflow-y: auto;
+  flex-grow: 1;
+
+  &.icdGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-sm;
+    padding: $spacing-sm;
+  }
+}

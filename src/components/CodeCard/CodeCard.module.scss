@@ -5,15 +5,31 @@
 .codeCard {
   @include card-base;
   margin-bottom: $spacing-md;
-  padding: $spacing-md $spacing-lg;
+  padding: $spacing-sm;
   cursor: pointer;
   position: relative;
   transition: $transition-shadow, $transition-color, transform 0.15s ease, background-color 0.2s ease;
-  // Subtle background for ICD cards
-  background-color: $color-background; // Default white for CPT
+  background-color: $color-background;
 
   &.icdCard {
-      background-color: $color-subtle-card-bg; // Use subtle grey for ICD
+    background-color: $color-subtle-card-bg;
+    margin-bottom: 0;
+
+    .description {
+      font-size: $font-size-sm;
+      -webkit-line-clamp: 1;
+      min-height: calc(#{$line-height-base} * #{$font-size-sm});
+      margin-bottom: $spacing-sm;
+    }
+
+    .code {
+      font-size: $font-size-base;
+    }
+
+    .cardHeader {
+      margin-bottom: $spacing-xs;
+      gap: $spacing-sm;
+    }
   }
 
   &:hover {
