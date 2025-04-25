@@ -56,7 +56,18 @@ const CodeCard = ({ codeData, type, onRemove, onShowDetails, linkedIcdIds = [], 
                 </div>
             )}
             {/* Remove button */}
-            <Tooltip content="Remove Code" position="top"> <Button variant="text" size="small" iconOnly onClick={handleRemoveClick} aria-label={`Remove code ${code}`} className={`${styles.actionButton} ${styles.removeButton}`}> <Icon name="delete" /> </Button> </Tooltip>
+            <Tooltip content="Remove Code" position="top">
+              <Button 
+                variant="text" 
+                size="small" 
+                iconOnly 
+                onClick={handleRemoveClick}
+                aria-label={`Remove code ${code}`} 
+                className={`${styles.actionButton} ${styles.removeButton}`}
+              >
+                <Icon name="delete" />
+              </Button>
+            </Tooltip>
         </div>
       </div>
       {/* Description */}
