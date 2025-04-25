@@ -27,3 +27,20 @@
 .icdLabel { display: flex; align-items: center; cursor: pointer; padding: $spacing-sm; border-radius: $border-radius-sm; transition: background-color 0.15s ease; &:hover { background-color: $color-background-hover; } .checkbox { margin-right: $spacing-sm; accent-color: $color-primary; cursor: pointer; } .icdItemText { font-size: $font-size-sm; color: $color-text-primary; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .icdItemCode { font-weight: $font-weight-medium; color: $color-primary; margin-right: $spacing-xs; } }
 .linkedCodesSection { margin-top: $spacing-sm; padding-top: $spacing-sm; border-top: 1px dashed $color-border; display: flex; flex-wrap: wrap; gap: $spacing-xs $spacing-sm; align-items: center; }
 .linkedChip { cursor: help; }
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  padding: $spacing-sm;
+
+  .title {
+    margin: 0;
+    font-size: $font-size-lg;
+  }
+
+  .addButton {
+    min-width: 100px;
+  }
+}

@@ -100,7 +100,12 @@ function CodingModule() {
   const toggleAlertPanel = useCallback(() => setAlertPanelOpen(prev => !prev), []);
   const showDetailsPanel = useCallback((codeData, type) => { setDetailsPanelState({ isOpen: true, content: { ...codeData, codeType: type } }); }, []);
   const closeDetailsPanel = useCallback(() => { setDetailsPanelState({ isOpen: false, content: null }); }, []);
-  const openAddCodeModal = useCallback((type) => { setAddCodeModalState({ isOpen: true, type }); }, []);
+  const openAddCodeModal = useCallback((type) => {
+    setAddCodeModalState({ 
+      isOpen: true, 
+      type: type
+    });
+  }, []);
   const closeAddCodeModal = useCallback(() => { setAddCodeModalState({ isOpen: false, type: null }); }, []);
   const toggleEmrExpanded = useCallback(() => { setIsEmrExpanded(prev => !prev); if (!isSliderOpen) setIsSliderOpen(true); }, [isSliderOpen]);
 

@@ -7,37 +7,37 @@ import styles from './CodeList.module.scss';
 const CodeList = ({
   title,
   codes = [],
-  type, // Expect 'cpt' or 'icd' to be passed reliably now
+  type,
   onRemove,
   onShowDetails,
   onAddCode,
-  // CPT specific props for linking dropdown
   onLinkUpdateInternal,
   codeLinks,
   availableIcdsForLinking,
   isLoading,
 }) => {
-  // Apply specific grid class for ICD list styling based on the received type
   const listClasses = `${styles.listContent} scrollable-panel ${type === 'icd' ? styles.icdGrid : ''}`;
+  
+  const handleAddCode = () => {
+    if (onAddCode) {
+      onAddCode(type);
+    }
+  };
 
   return (
     <div className={styles.codeListContainer}>
-        {/* Header with Title and Add Button */}
         <div className={styles.listHeader}>
             <h3 className={styles.title}>{title} ({codes.length})</h3>
-             {/* Render Add button only if onAddCode handler is provided */}
-             {onAddCode && (
-                 <Button
-                    variant="primary"
-                    size="small"
-                    iconLeft="add"
-                    onClick={() => onAddCode(type)} // Pass type directly
-                    // Directly use type prop, assuming it's valid ('cpt' or 'icd')
-                    aria-label={`Add manual ${type.toUpperCase()} code`}
-                 >
-                    Add {type.toUpperCase()}
-                </Button>
-            )}
+            <Button
+                variant="primary"
+                size="small"
+                iconLeft="add"
+                onClick={handleAddCode}
+                className={styles.addButton}
+                aria-label={`Add manual ${type.toUpperCase()} code`}
+            >
+                Add {type.toUpperCase()}
+            </Button>
         </div>
 
         {/* Content Area */}
