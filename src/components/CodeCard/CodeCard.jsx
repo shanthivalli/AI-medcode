@@ -27,7 +27,15 @@ const CodeCard = ({ codeData, type, onRemove, onShowDetails, linkedIcdIds = [], 
   const cardClasses = `${styles.codeCard} ${isManual ? styles.manual : ''} ${type === 'icd' ? styles.icdCard : styles.cptCard}`;
 
   return (
-    <div className={cardClasses} role="article" aria-labelledby={`code-${id}`} onClick={handleCardClick} tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(e); } }}>
+    <div 
+      className={cardClasses} 
+      role="article" 
+      aria-labelledby={`code-${id}`} 
+      onClick={handleCardClick} 
+      tabIndex={0} 
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(e); } }}
+      data-description={description}
+    >
       {/* Header */}
       <div className={styles.cardHeader}>
         <div className={styles.codeInfo}> <strong id={`code-${id}`} className={styles.code}>{code}</strong> {isManual && ( <Tooltip content="Manually Added" position="top"> <Icon name="edit" className={styles.manualIcon}/> </Tooltip> )} </div>

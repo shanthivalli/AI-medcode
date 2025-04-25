@@ -14,14 +14,13 @@
   &.icdCard {
     background-color: $color-subtle-card-bg;
     margin-bottom: 0;
-    height: fit-content;
+    height: 50px;
     width: 100%;
+    padding: $spacing-xs;
+    position: relative;
 
     .description {
-      font-size: $font-size-sm;
-      -webkit-line-clamp: 1;
-      min-height: calc(#{$line-height-base} * #{$font-size-sm});
-      margin-bottom: $spacing-sm;
+      display: none;
     }
 
     .code {
@@ -29,8 +28,29 @@
     }
 
     .cardHeader {
-      margin-bottom: $spacing-xs;
+      margin-bottom: 0;
       gap: $spacing-sm;
+      height: 100%;
+      align-items: center;
+    }
+
+    &:hover {
+      &::after {
+        content: attr(data-description);
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        background: $color-background;
+        padding: $spacing-xs;
+        border-radius: $border-radius-sm;
+        box-shadow: $shadow-md;
+        z-index: 10;
+        width: max-content;
+        max-width: 300px;
+        font-size: $font-size-sm;
+        color: $color-text-primary;
+        border: 1px solid $color-border;
+      }
     }
   }
 
