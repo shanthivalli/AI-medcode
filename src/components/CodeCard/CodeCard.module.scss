@@ -18,6 +18,7 @@
     width: 100%;
     padding: $spacing-xs;
     position: relative;
+    cursor: help; // Added cursor style
 
     .description {
       display: none;

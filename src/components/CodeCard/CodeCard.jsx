@@ -39,7 +39,7 @@ const CodeCard = ({ codeData, type, onRemove, onShowDetails, linkedIcdIds = [], 
       onClick={handleCardClick} 
       tabIndex={0} 
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(e); } }}
-      data-description={description}
+      title={type === 'icd' ? `${code} - ${description}` : undefined}
     >
       {/* Header */}
       <div className={styles.cardHeader}>
