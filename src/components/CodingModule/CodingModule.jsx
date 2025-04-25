@@ -90,7 +90,27 @@ function CodingModule() {
   // --- End Fix ---
 
   // Other callbacks (Keep as before)
-  const handleRemoveCode = useCallback((type, codeId) => { /* ... */ }, []);
+  const handleRemoveCode = useCallback((type, codeId) => {
+    setRemovedCodeIds(prev => new Set([...prev, codeId]));
+    // Also clean up any code links if it's an ICD code
+    if (type === 'icd') {
+      setCodeLinks(prev => {
+        const newLinks = { ...prev };
+        // Remove this ICD from all CPT code links
+        Object.keys(newLinks).forEach(cptId => {
+          newLinks[cptId] = newLinks[cptId].filter(id => id !== codeId);
+        });
+        return newLinks;
+      });
+    }
+    // If it's a CPT code, remove all its ICD links
+    if (type === 'cpt') {
+      setCodeLinks(prev => {
+        const { [codeId]: removed, ...rest } = prev;
+        return rest;
+      });
+    }
+  }, []);
   const handleAddManualCode = useCallback((codeInfo, type) => {
     if (type === 'cpt') {
       setAllCptCodes(prev => [...prev, codeInfo]);
