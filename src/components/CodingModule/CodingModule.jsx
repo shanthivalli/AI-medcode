@@ -91,7 +91,13 @@ function CodingModule() {
 
   // Other callbacks (Keep as before)
   const handleRemoveCode = useCallback((type, codeId) => { /* ... */ }, []);
-  const handleAddManualCode = useCallback((codeInfo, type) => { /* ... */ }, []);
+  const handleAddManualCode = useCallback((codeInfo, type) => {
+    if (type === 'cpt') {
+      setAllCptCodes(prev => [...prev, codeInfo]);
+    } else if (type === 'icd') {
+      setAllIcdCodes(prev => [...prev, codeInfo]);
+    }
+  }, []);
   const handleAddCodeFromAnalysis = useCallback((codeInfo, type) => { /* ... */ }, [allCptCodes, allIcdCodes, removedCodeIds, handleAddManualCode]);
   const handleLinkUpdateInternal = useCallback((cptId, newLinkedIcdIds) => { /* ... */ }, []);
   const handleSubmit = useCallback((isFlagged = false) => { /* ... */ }, [allCptCodes, allIcdCodes, removedCodeIds, codeLinks, chartText, encounterData]);

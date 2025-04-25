@@ -27,22 +27,26 @@ const AddCodeModal = ({
     // Validate essential props
     if (!codeType || !code.trim()) {
       console.warn("AddCodeModal: Cannot add code - codeType or code value is missing.");
-      // TODO: Consider adding user feedback (e.g., highlight input)
       return;
     }
 
-    // Prepare the object with code details (excluding type)
+    // Prepare the object with code details
     const codeInfo = {
-      id: `${codeType.toLowerCase()}-manual-${Date.now()}`, // Simple unique ID
-      code: code.trim().toUpperCase(), // Standardize code format
-      description: description.trim() || `Manually Added ${codeType.toUpperCase()}`, // Default description
-      isManual: true, // Mark as manually added
+      id: `${codeType.toLowerCase()}-manual-${Date.now()}`,
+      code: code.trim().toUpperCase(),
+      description: description.trim() || `Manually Added ${codeType.toUpperCase()}`,
+      isManual: true,
+      unit: 1,
+      modifiers: '',
     };
 
-    // Call the callback passed from the parent component
-    onAddCode(codeInfo, codeType);
-
-    onClose(); // Close the modal after successful submission
+    try {
+      // Call the callback passed from the parent component
+      onAddCode(codeInfo, codeType.toLowerCase());
+      onClose(); // Close the modal after successful submission
+    } catch (error) {
+      console.error("Error adding code:", error);
+    }
   };
 
   // --- Prepare display strings safely ---
