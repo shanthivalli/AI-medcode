@@ -19,7 +19,18 @@
 }
 
 .sliderHeader { display: flex; justify-content: space-between; align-items: center; padding: $spacing-md $spacing-lg; border-bottom: 1px solid $color-border; flex-shrink: 0; }
-.internalCloseButton { color: #000000; flex-shrink: 0; &:hover { color: lighten(#000000, 30%); background-color: $color-background-hover; } @include focus-visible-ring($color-primary, 1px); }
+.internalCloseButton { 
+  color: $color-text-primary; 
+  flex-shrink: 0; 
+  background-color: rgba($color-background, 0.8);
+  border-radius: $border-radius-sm;
+  padding: $spacing-xs;
+  &:hover { 
+    color: $color-primary; 
+    background-color: $color-background-hover; 
+  } 
+  @include focus-visible-ring($color-primary, 1px); 
+}
 .title { margin: 0; font-size: $font-size-xl; font-weight: $font-weight-semibold; text-align: center; flex-grow: 1; padding-left: 40px; padding-right: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .headerSpacer { width: 36px; flex-shrink: 0; visibility: hidden; }
 
