@@ -85,8 +85,15 @@ const CodeCard = ({ codeData, type, onRemove, onShowDetails, linkedIcdIds = [], 
                 {Array.from(selectedIcds).map(icdId => {
                      const icd = availableIcdsForLinking.find(i => i.id === icdId);
                      return icd ? (
-                          <Tooltip key={icd.id} content={`${icd.code}: ${icd.description}`} position="bottom">
-                              <Chip label={icd.code} size="small" color="info" variant="outlined" className={styles.linkedChip} />
+                          <Tooltip key={icd.id} content={`${icd.code} - ${icd.description}`} position="bottom">
+                              <Chip 
+                                label={icd.code} 
+                                size="small" 
+                                color="info" 
+                                variant="outlined" 
+                                className={styles.linkedChip}
+                                title={`${icd.code} - ${icd.description}`}
+                              />
                           </Tooltip>
                      ) : null;
                  })}
