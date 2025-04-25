@@ -22,8 +22,8 @@
 .internalCloseButton { 
   color: $color-text-primary; 
   flex-shrink: 0; 
-  background-color: $color-background;
-  padding: $spacing-xs;
+  background-color: $color-light;
+  padding: $spacing-sm;
   border: 1px solid $color-border;
   border-radius: $border-radius-sm;
   margin-right: $spacing-sm;
@@ -32,9 +32,10 @@
     background-color: $color-background-hover;
   } 
   @include focus-visible-ring($color-primary, 1px);
+  
   svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 }
 .title { margin: 0; font-size: $font-size-xl; font-weight: $font-weight-semibold; text-align: center; flex-grow: 1; padding-left: 40px; padding-right: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

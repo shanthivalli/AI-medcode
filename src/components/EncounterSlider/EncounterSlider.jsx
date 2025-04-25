@@ -78,9 +78,31 @@ const EncounterSlider = ({
       >
         {/* Header */}
         <div className={styles.sliderHeader}>
-            <Tooltip content="Close Panel (Esc)" position="right"> <Button onClick={onClose} variant="text" iconOnly className={styles.internalCloseButton} ariaLabel="Close Encounter Details" size="small" > <Icon name="chevron-left" size="1.5em" /> </Button> </Tooltip>
+            <Tooltip content="Close Panel (Esc)" position="right"> 
+                <Button 
+                    onClick={onClose} 
+                    variant="secondary" 
+                    iconOnly 
+                    className={styles.internalCloseButton} 
+                    ariaLabel="Close Encounter Details" 
+                    size="small"
+                > 
+                    <Icon name="chevron-left" /> 
+                </Button> 
+            </Tooltip>
             <h2 id="encounter-details-title" className={styles.title}>Encounter Details</h2>
-            <Tooltip content={"Exit Expanded View (Esc)"} position={"left"}> <Button variant="text" iconOnly size="small" onClick={onToggleEmrExpanded} aria-label={"Exit Expanded EMR View"} className={styles.exitExpandedButton} > <Icon name={'minimize'} /> </Button> </Tooltip>
+            <Tooltip content={"Exit Expanded View (Esc)"} position={"left"}> 
+                <Button 
+                    variant="text" 
+                    iconOnly 
+                    size="small" 
+                    onClick={onToggleEmrExpanded} 
+                    aria-label={"Exit Expanded EMR View"} 
+                    className={styles.exitExpandedButton}
+                > 
+                    <Icon name={'minimize'} /> 
+                </Button> 
+            </Tooltip>
         </div>
 
         {/* Content Area */}
