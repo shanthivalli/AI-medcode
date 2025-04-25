@@ -38,10 +38,11 @@
       &::after {
         content: attr(data-description);
         position: absolute;
-        bottom: 100%;
-        left: 0;
+        bottom: 120%;
+        left: 50%;
+        transform: translateX(-50%);
         background: $color-background;
-        padding: $spacing-xs;
+        padding: $spacing-sm;
         border-radius: $border-radius-sm;
         box-shadow: $shadow-md;
         z-index: 10;
@@ -50,6 +51,20 @@
         font-size: $font-size-sm;
         color: $color-text-primary;
         border: 1px solid $color-border;
+        white-space: normal;
+        text-align: center;
+        animation: fadeIn 0.2s ease-in-out;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
       }
     }
   }
