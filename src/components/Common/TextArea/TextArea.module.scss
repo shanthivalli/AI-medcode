@@ -1,0 +1,30 @@
+// /src/components/Common/TextArea/TextArea.module.scss
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+@use '../Input/Input.module.scss'; // Inherit Input wrapper/label styles
+
+.textAreaWrapper { @extend .inputWrapper; }
+.label { @extend .label;
+    .textarea:focus + &, .textarea:not(:placeholder-shown) + & { top: $spacing-sm; font-size: $font-size-sm; color: $color-primary; }
+    .textarea:disabled:not(:placeholder-shown) + & { top: $spacing-sm; font-size: $font-size-sm; color: $color-text-secondary; }
+}
+.textarea {
+  @extend .input; // Inherit base input styles (like focus, disabled) but override specifics
+  line-height: $line-height-base;
+  padding: $spacing-sm $spacing-md; // Normal padding
+  height: auto; // Let rows/content define height
+  resize: vertical;
+  min-height: calc(#{$line-height-base} * #{$font-size-base} * 4 + #{$spacing-sm * 2}); // Default min-height for rows=4
+  @include subtle-scrollbar($track: transparent, $thumb: darken($color-border, 10%));
+  // Ensure correct top padding for float label
+  padding-top: $spacing-xl;
+  &:focus, &:not(:placeholder-shown) { padding-top: $spacing-xl; }
+  // Reset border from input mixin if needed, use standard border
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  &:focus { border-color: $color-primary; box-shadow: 0 0 0 2px $color-focus-ring; border-bottom-color: $color-primary; border-bottom-width: 1px; /* Override underline focus */ }
+  &:disabled { border-style: solid; } // Override dashed from mixin maybe
+}
+.textAreaWrapper.error { .textarea { border-color: $color-danger; &:focus { border-color:$color-danger; } } .label, .textarea:focus + .label { color: $color-danger; } }
+.textAreaWrapper.disabled { .textarea { border-color: $color-border; } .label { color: $color-text-secondary; } }
+.errorMessage { @extend .errorMessage; }

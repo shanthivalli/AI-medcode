@@ -1,0 +1,6 @@
+// /src/components/Common/Tooltip/Tooltip.module.scss
+@use '../../../styles/variables' as *;
+
+.tooltipContent { background-color: rgba($color-dark, 0.9); color: $color-white; padding: $spacing-xs $spacing-sm; border-radius: $border-radius-sm; font-size: $font-size-sm; font-weight: $font-weight-medium; line-height: 1.4; white-space: nowrap; z-index: $z-index-tooltip; pointer-events: none; animation: fadeInTooltip 0.15s ease-out forwards; }
+@keyframes fadeInTooltip { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+// .tooltipArrow { /* Fill set via props */ }

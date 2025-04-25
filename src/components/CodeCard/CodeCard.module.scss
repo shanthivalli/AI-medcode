@@ -1,0 +1,213 @@
+// /src/components/CodeCard/CodeCard.module.scss
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.codeCard {
+  @include card-base;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  cursor: pointer;
+  position: relative;
+  transition: $transition-shadow, $transition-color, transform 0.15s ease, background-color 0.2s ease;
+  // Subtle background for ICD cards
+  background-color: $color-background; // Default white for CPT
+
+  &.icdCard {
+      background-color: $color-subtle-card-bg; // Use subtle grey for ICD
+  }
+
+  &:hover {
+    border-color: darken($color-border, 5%);
+    box-shadow: $shadow-md; // Slightly more prominent shadow on hover
+  }
+
+   @include focus-visible-ring($color-primary, 2px);
+
+   &.manual {
+       border-left: 3px solid $color-info;
+   }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-sm;
+  gap: $spacing-lg;
+}
+
+.codeInfo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.code {
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-lg; // Increased code font size
+  color: $color-code;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.manualIcon {
+    color: $color-info;
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+  position: relative; // Needed for dropdown absolute positioning context
+}
+
+.actionButton {
+  color: $color-text-secondary;
+  border-radius: 50%;
+  padding: $spacing-xs;
+
+  &:hover {
+    background-color: $color-background-hover;
+    color: $color-text-primary;
+  }
+
+  &.removeButton:hover {
+    color: $color-danger;
+    background-color: rgba($color-danger, 0.1);
+  }
+
+  &.linkButton {
+    color: $color-link-icon;
+     &:hover { color: $color-link-icon-active; background-color: rgba($color-primary, 0.1); }
+     &.hasLinks { color: $color-link-icon-active; }
+  }
+
+  @include focus-visible-ring($color-primary, 1px);
+}
+
+.description {
+  font-size: $font-size-base; // Use base font size
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  line-height: 1.5;
+   // Clamp description to max 2 lines to save space
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: calc(#{$line-height-base} * #{$font-size-base} * 2); // Reserve space for 2 lines
+}
+
+// --- CPT Specific Details ---
+.cptDetails {
+    display: flex;
+    gap: $spacing-lg;
+    font-size: $font-size-sm; // Smaller font for details
+    color: $color-text-secondary;
+    margin-top: $spacing-sm;
+    padding-top: $spacing-sm;
+    border-top: 1px dashed $color-border;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+     .icon { font-size: 1.1em; } // Adjust icon size if needed
+}
+
+
+// --- CPT Linking Dropdown ---
+.linkActionWrapper {
+    position: relative; // Create positioning context for the dropdown
+}
+
+.linkDropdown {
+    position: absolute;
+    top: calc(100% + #{$spacing-xs}); // Position below the link button
+    right: 0; // Align to the right of the actions container
+    width: 300px; // Fixed width for dropdown
+    max-height: 250px; // Max height before scrolling
+    background-color: $color-background;
+    border-radius: $border-radius-base;
+    box-shadow: $shadow-lg;
+    z-index: $z-index-dropdown;
+    border: 1px solid $color-border;
+    overflow: hidden; // Hide internal overflow before list scrolls
+    display: flex;
+    flex-direction: column;
+    animation: fadeInScale 0.2s ease-out;
+    transform-origin: top right;
+}
+
+.dropdownTitle {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+    margin: 0;
+    border-bottom: 1px solid $color-border;
+    flex-shrink: 0;
+}
+
+.icdList {
+    list-style: none;
+    padding: $spacing-sm; // Padding inside scroll area
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+    // scrollable-panel class applies scrollbar styling
+}
+
+.noIcds {
+    font-style: italic;
+    color: $color-text-secondary;
+    padding: $spacing-sm;
+    text-align: center;
+    font-size: $font-size-sm;
+}
+
+
+.icdLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: $spacing-sm;
+    border-radius: $border-radius-sm;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: $color-background-hover;
+    }
+
+    .checkbox {
+        margin-right: $spacing-sm;
+        accent-color: $color-primary; // Style checkbox color
+        cursor: pointer;
+    }
+
+    .icdItemText {
+        font-size: $font-size-sm;
+        color: $color-text-primary;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .icdItemCode {
+        font-weight: $font-weight-medium;
+        color: $color-primary;
+        margin-right: $spacing-xs;
+    }
+}
+
+// Layout specific adjustments (handled by grid in parent)
+// .icdCard {
+//     // Styles specific to ICD card when in grid, if needed
+//     // e.g., ensure description clamping works well
+// }

@@ -1,17 +1,34 @@
+// /src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import './index.css'; // Assuming this imports global.scss with font
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// --- Dynamically Create Portal Roots ---
+function createPortalRoot(id) {
+  let element = document.getElementById(id);
+  if (!element) {
+    element = document.createElement('div');
+    element.id = id;
+    document.body.appendChild(element); // Append it directly to the body
+    console.log(`Portal root #${id} created.`);
+  }
+  return element;
+}
+createPortalRoot('modal-root');
+createPortalRoot('panel-root');
+createPortalRoot('popover-root');
+createPortalRoot('tooltip-root');
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// --- Render React App ---
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  console.error("Fatal Error: Root element with ID 'root' was not found in the DOM.");
+} else {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}

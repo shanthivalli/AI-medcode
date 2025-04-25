@@ -1,0 +1,51 @@
+// /src/components/EncounterSlider/EncounterSlider.module.scss
+// Simplified - only normal state styles
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.sliderPanel {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: $slider-width; max-width: 100vw;
+  background-color: $color-background;
+  border-right: 1px solid $color-border;
+  box-shadow: $shadow-lg;
+  z-index: $z-index-panel;
+  display: flex; flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+
+  @include slide-in('left');
+  &:focus { outline: none; }
+}
+
+.sliderHeader { display: flex; justify-content: space-between; align-items: center; padding: $spacing-md $spacing-lg; border-bottom: 1px solid $color-border; flex-shrink: 0; }
+.internalCloseButton { color: #000000; flex-shrink: 0; &:hover { color: lighten(#000000, 30%); background-color: $color-background-hover; } @include focus-visible-ring($color-primary, 1px); }
+.title { margin: 0; font-size: $font-size-xl; font-weight: $font-weight-semibold; text-align: center; flex-grow: 1; padding-left: 40px; padding-right: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.headerSpacer { width: 36px; flex-shrink: 0; visibility: hidden; }
+
+.sliderContent { flex-grow: 1; overflow-y: auto; padding: $spacing-lg; font-size: $font-size-base * 1.05; display: flex; flex-direction: column; min-height: 0; @include subtle-scrollbar(); }
+.section { margin-bottom: $spacing-xl; flex-shrink: 0; }
+.sectionTitle { font-weight: $font-weight-semibold; color: $color-primary; margin-bottom: $spacing-md; display: flex; align-items: center; gap: $spacing-sm; border-bottom: 1px solid $color-border; padding-bottom: $spacing-sm; font-size: inherit; }
+.detailGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: $spacing-sm $spacing-lg; line-height: 1.6; font-size: inherit; div { color: $color-text-secondary; strong { color: $color-text-primary; font-weight: $font-weight-medium; margin-right: $spacing-xs; } } }
+.providerCodeLists { display: grid; grid-template-columns: 1fr; gap: $spacing-md; margin-top: $spacing-sm; @include media-breakpoint-up($breakpoint-sm) { grid-template-columns: 1fr 1fr; } }
+.codeListTitle { font-size: $font-size-sm; font-weight: $font-weight-semibold; color: $color-text-secondary; margin-bottom: $spacing-sm; }
+.chipContainer { display: flex; flex-wrap: wrap; gap: $spacing-xs $spacing-sm; }
+.emptyMessage { font-style: italic; color: $color-text-secondary; margin-top: $spacing-sm; font-size: inherit; }
+
+.emrSection { margin-bottom: $spacing-lg; flex-shrink: 0; display: flex; flex-direction: column; flex-grow: 1; min-height: 250px; }
+.emrHeader { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; .sectionTitle { border-bottom: none; padding-bottom: 0; margin-bottom: $spacing-sm; } }
+// .fullscreenButton { /* Removed as button is gone */ }
+.textAreaWrapper { position: relative; display: flex; flex-grow: 1; min-height: 0; }
+.chartTextArea { width: 100%; flex-grow: 1; border: 1px solid $color-border; border-radius: $border-radius-sm; padding: $spacing-sm $spacing-md; font-size: inherit; resize: vertical; min-height: 150px; overflow-y: auto; line-height: 1.6; &:focus { border-color: $color-primary; box-shadow: 0 0 0 2px $color-focus-ring; } padding-top: $spacing-sm; &:focus, &:not(:placeholder-shown) { padding-top: $spacing-sm; } @include subtle-scrollbar(); }
+
+.actionFooter { padding: $spacing-lg; border-top: 1px solid $color-border; flex-shrink: 0; background-color: $color-light; }
+.generateButton { width: 100%; }
+
+.sliderOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba($color-dark, 0.2); z-index: $z-index-panel - 1; cursor: pointer; animation: fadeInOverlay 0.3s ease-in-out; }
+@keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+// Responsive adjustments
+@include media-breakpoint-down($breakpoint-sm) {
+   .sliderPanel { width: 90vw; }
+   .detailGrid { grid-template-columns: 1fr; }
+}

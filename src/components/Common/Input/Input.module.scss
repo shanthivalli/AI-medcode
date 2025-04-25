@@ -1,0 +1,175 @@
+// /src/components/Common/Input/Input.module.scss
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.inputWrapper {
+  position: relative;
+  display: block;
+  margin-bottom: $spacing-lg;
+}
+
+// Base input styling using the mixin
+.input {
+  @include modern-input-style;
+  display: block;
+  width: 100%;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+  transition: border-color 0.2s ease-in-out, padding 0.2s ease-in-out; // Adjust transition
+  appearance: none;
+  padding-top: $spacing-lg; // Base padding-top for floated label
+  padding-bottom: $spacing-sm; // Base padding-bottom
+  padding-left: $spacing-sm; // Base padding-left (will be overridden if icon exists)
+  padding-right: $spacing-sm; // Base padding-right (will be overridden if icon exists)
+
+  &:focus,
+  &:not(:placeholder-shown) {
+    padding-top: $spacing-lg; // Keep padding when floated/focused
+  }
+
+  // Placeholder styling
+  &::placeholder {
+    color: $color-text-secondary;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+  &:focus::placeholder {
+    opacity: 1;
+  }
+
+  // Remove number input arrows
+  &[type="number"] {
+    -moz-appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+// Floating Label Styling
+.label {
+  position: absolute;
+  top: $spacing-lg; // Align with initial padding-top
+  left: $spacing-sm; // Initial left position (will be overridden if left icon exists)
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+  pointer-events: none;
+  transition: top 0.2s ease-in-out, left 0.2s ease-in-out, font-size 0.2s ease-in-out, color 0.2s ease-in-out;
+  transform-origin: left top;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - #{$spacing-sm} * 2); // Base max-width (adjust later for icons)
+}
+
+// Label Float Animation
+.input:focus + .label,
+.input:not(:placeholder-shown) + .label {
+  top: $spacing-xs; // Move label up
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+.input:disabled:not(:placeholder-shown) + .label { // Keep floated state visually distinct for disabled
+    top: $spacing-xs;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+}
+.input:disabled:focus + .label { color: $color-text-secondary; }
+
+
+// --- Icon Implementation Styles ---
+
+// Base Icon Styling
+.inputIcon {
+    position: absolute;
+    top: 50%;
+    // Adjust vertical alignment slightly - often needs tweaking based on line-height/padding
+    transform: translateY(calc(-50% + 2px)); // Small adjustment pushing icon down slightly
+    color: $color-text-secondary;
+    z-index: 2; // Position above input border/bg, below floated label
+    pointer-events: none; // Icons not clickable by default
+    font-size: 1.2em; // Standard icon size
+    transition: color 0.2s ease-in-out;
+}
+
+// Left Icon Specifics
+.leftIcon {
+    left: $spacing-sm; // Position from left
+}
+
+// Right Icon Specifics
+.rightIcon {
+    right: $spacing-sm; // Position from right
+}
+
+// Adjust Input Padding when Icons are present
+.hasLeftIcon .input {
+    padding-left: $spacing-xl + $spacing-sm; // ~28px padding-left
+}
+.hasRightIcon .input {
+    padding-right: $spacing-xl + $spacing-sm; // ~28px padding-right
+}
+
+// Adjust Label Position and Width when Icons are present
+.hasLeftIcon .label {
+    left: $spacing-xl + $spacing-sm; // Start label after the left icon space
+    // Adjust max-width considering the left icon space
+    max-width: calc(100% - (#{$spacing-xl} + #{$spacing-sm}) - #{$spacing-sm}); // Total width - left icon space - right padding
+}
+// Further adjust max-width if BOTH icons are present (less common, but possible)
+.hasLeftIcon.hasRightIcon .label {
+     max-width: calc(100% - (#{$spacing-xl} + #{$spacing-sm}) * 2); // Total width - space for both icons
+}
+
+
+// Change icon color when the input wrapper has focus-within
+.inputWrapper:focus-within {
+    .inputIcon {
+        color: $color-primary; // Use primary color for focused icon
+    }
+     // Keep label color primary on focus (already handled by default focus state)
+     .input:focus + .label {
+          color: $color-primary;
+     }
+}
+
+
+// --- Error State ---
+.inputWrapper.error {
+  .input {
+    border-bottom-color: $color-danger;
+    &:focus { border-bottom-color: $color-danger; }
+  }
+  .label,
+  .input:focus + .label { // Keep label red even on focus
+    color: $color-danger;
+  }
+  // Make icon red in error state
+  .inputIcon {
+     color: $color-danger;
+  }
+}
+
+.errorMessage {
+    font-size: $font-size-sm;
+    color: $color-danger;
+    padding-top: $spacing-xs;
+}
+
+// --- Disabled State ---
+.inputWrapper.disabled {
+    .input {
+        border-bottom-style: dashed; // From mixin
+         // Ensure padding isn't affected by focus/value state when disabled
+         padding-top: $spacing-lg;
+    }
+    .label { color: $color-text-secondary; } // From base label styles
+    .inputIcon {
+        color: $color-text-secondary;
+        opacity: 0.7;
+    }
+}

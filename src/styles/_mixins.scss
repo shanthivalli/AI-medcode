@@ -1,0 +1,53 @@
+@use 'variables' as *;
+
+// Resets button styles
+@mixin button-reset {
+  padding: 0; border: none; background: none; color: inherit; font: inherit; cursor: pointer; outline: none; appearance: none; text-align: center; vertical-align: middle; user-select: none; text-decoration: none;
+}
+
+// Basic Card Styling (Modern)
+@mixin card-base {
+  background-color: $color-background; border: 1px solid $color-border; border-radius: $border-radius-base; box-shadow: $shadow-sm; transition: $transition-shadow; overflow: hidden;
+  &:hover { box-shadow: $shadow-md; }
+}
+
+// Flexbox centering
+@mixin flex-center($direction: row, $justify: center, $align: center) {
+  display: flex; flex-direction: $direction; align-items: $align; justify-content: $justify;
+}
+
+// Responsive media query helper
+@mixin media-breakpoint-up($breakpoint) { @media (min-width: $breakpoint) { @content; } }
+@mixin media-breakpoint-down($breakpoint) { @media (max-width: calc(#{$breakpoint} - 0.02px)) { @content; } }
+
+// Focus Visible Styling (Accessibility) - Ring Style
+@mixin focus-visible-ring($color: $color-primary, $offset: 2px, $width: 2px) {
+  &:focus { outline: none; }
+  &:focus-visible { outline: none; box-shadow: 0 0 0 #{$offset + $width} $color-background, 0 0 0 #{$offset + $width + $width} rgba($color, 0.5); }
+}
+
+// Modern Input Underline/Border Style (if used)
+@mixin modern-input-style {
+    border: none; border-bottom: 1px solid $color-secondary; border-radius: 0; padding: $spacing-sm 0; background-color: transparent; transition: border-color 0.2s ease-in-out;
+    &:focus { outline: none; border-bottom-color: $color-primary; border-bottom-width: 2px; }
+    &::placeholder { color: $color-text-secondary; opacity: 1; }
+    &:disabled { border-bottom-style: dashed; background-color: transparent; opacity: 0.7; cursor: not-allowed; }
+}
+
+// Subtle Scrollbar
+@mixin subtle-scrollbar($track: $color-light, $thumb: $color-secondary, $thumb-hover: darken($color-secondary, 10%)) {
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track { background: $track; border-radius: 3px; }
+  &::-webkit-scrollbar-thumb { background: $thumb; border-radius: 3px; transition: background-color 0.2s ease; }
+  &::-webkit-scrollbar-thumb:hover { background: $thumb-hover; }
+  scrollbar-width: thin; scrollbar-color: $thumb $track;
+}
+
+// Slide-in animation base (used by EncounterSlider)
+@mixin slide-in($direction: 'right', $duration: 0.3s) {
+    transition: transform $duration ease-in-out;
+    @if $direction == 'right' { transform: translateX(100%); &.isOpen { transform: translateX(0); } }
+    @else if $direction == 'left' { transform: translateX(-100%); &.isOpen { transform: translateX(0); } }
+    @else if $direction == 'top' { transform: translateY(-100%); &.isOpen { transform: translateY(0); } }
+    @else if $direction == 'bottom' { transform: translateY(100%); &.isOpen { transform: translateY(0); } }
+}

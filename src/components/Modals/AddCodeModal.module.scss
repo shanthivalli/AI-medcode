@@ -1,0 +1,8 @@
+// /src/components/Modals/AddCodeModal.module.scss
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+@use './Modals.module.scss'; // For @extend
+
+.formContent { padding: $spacing-lg 0; }
+// .inputField {} // No specific overrides needed currently
+.modalFooter { @extend .modalFooter; margin-top: $spacing-lg; }

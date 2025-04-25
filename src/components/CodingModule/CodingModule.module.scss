@@ -1,0 +1,123 @@
+// /src/components/CodingModule/CodingModule.module.scss
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// --- Base Container ---
+.codingModule { display: flex; position: relative; height: 100vh; width: 100vw; background-color: $color-background-app; overflow: hidden; }
+
+// --- Slider Toggle Button ---
+.sliderToggleButton { position: absolute; left: $spacing-sm; top: 50%; transform: translateY(-50%); z-index: $z-index-panel + 1; width: 40px; height: 40px; border-radius: $border-radius-base; box-shadow: $shadow-md; background-color: #EAECEE; color: #000000; border: 1px solid darken($color-border, 5%); opacity: 1; visibility: visible; transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; svg { stroke-width: 2.5 !important; stroke: #000000; } &:hover { box-shadow: $shadow-lg; transform: translateY(-50%) scale(1.05); background-color: darken(#EAECEE, 5%); color: lighten(#000000, 20%); svg { stroke: lighten(#000000, 20%); } } @include focus-visible-ring($color-primary, 2px); }
+
+// --- Top Right Action Area ---
+.topRightActions { position: absolute; top: $spacing-lg; right: $spacing-lg; z-index: $z-index-sticky; display: flex; align-items: center; gap: $spacing-md; }
+.alertButton { position: relative; width: 40px; height: 40px; border-radius: 50%; background-color: $color-white; box-shadow: $shadow-sm; &:hover { box-shadow: $shadow-md; } .icon { color: $color-text-secondary; } &.warning .icon { color: $color-warning; } }
+.alertCount { position: absolute; top: -2px; right: -2px; background-color: $color-danger; color: $color-white; border-radius: 50%; font-size: $font-size-sm * 0.9; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: $font-weight-medium; padding: 2px; line-height: 1; border: 1px solid $color-white; box-shadow: $shadow-sm; }
+
+// --- Slider Overlay ---
+.sliderOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba($color-dark, 0.2); z-index: $z-index-panel - 1; cursor: pointer; animation: fadeInOverlay 0.3s ease-in-out; }
+@keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+
+// --- Main Content Area (Panels Container) ---
+.mainContent {
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+  overflow: hidden;
+  padding: $spacing-lg;
+  padding-top: calc(#{$spacing-lg} + 40px + #{$spacing-lg}); // Top padding for actions
+  padding-left: calc(#{$spacing-sm} + 40px + #{$spacing-lg}); // Default padding left
+  gap: $spacing-lg;
+  // Use margin-left to accommodate the fixed-position slider when it's open
+  margin-left: 0; // Default margin
+  transition: margin-left 0.3s ease-in-out; // Animate margin change
+
+  // --- Style Adjustments When Slider is Open ---
+  &.sliderIsOpen {
+    margin-left: $slider-width; // Push content by NORMAL slider width
+    // Panel width adjustments are handled within the .panel rules below
+
+    // --- Explicitly Hide Analysis Panel using CSS when slider open ---
+    // This provides a fallback if JSX conditional rendering fails or for animations
+    .panelAnalysis {
+        flex-basis: 0 !important; // Collapse width
+        flex-grow: 0 !important;
+        padding: 0 !important; margin: 0 !important; border: none !important;
+        overflow: hidden !important;
+        opacity: 0 !important; // Fade out
+        width: 0 !important;
+        min-width: 0 !important;
+        transition: flex-basis 0.3s ease-in-out, opacity 0.2s ease-in-out, padding 0.3s ease-in-out, margin 0.3s ease-in-out, border 0.3s ease-in-out; // Smooth hide
+    }
+    // --- Make CPT/ICD panels take up the space ---
+    .panelCpt, .panelIcd {
+        flex-basis: $panel-width-split; // 50%
+        flex-grow: 1; // Grow to fill available space
+    }
+
+  }
+}
+
+// --- Individual Panels ---
+.panel {
+  height: 100%; display: flex; flex-direction: column; overflow: hidden; background-color: $color-background-panel; border-radius: $border-radius-lg; border: 1px solid $color-border; box-shadow: $shadow-sm; padding: $spacing-lg;
+  // Animate width/opacity changes smoothly
+  transition: flex-basis 0.3s ease-in-out, flex-grow 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  flex-shrink: 1; flex-grow: 0; // Default state
+  opacity: 1; // Default visible
+
+  // Default widths when slider is CLOSED
+  &.panelCpt { flex-basis: $panel-width-cpt; }
+  &.panelIcd { flex-basis: $panel-width-icd; }
+  &.panelAnalysis { flex-basis: $panel-width-analysis; }
+}
+
+
+// --- Responsive Adjustments ---
+@include media-breakpoint-down($breakpoint-lg) {
+  // On large tablets, stack Analysis below CPT/ICD when slider closed
+  .mainContent {
+    padding-left: calc(#{$spacing-sm} + 40px + #{$spacing-md}); // Default padding
+    flex-wrap: wrap; align-content: flex-start;
+    margin-left: 0 !important; // No margin push when wrapping
+
+    .panelCpt { flex-basis: 50%; flex-grow: 1;}
+    .panelIcd { flex-basis: 50%; flex-grow: 1;}
+    .panelAnalysis { flex-basis: 100%; margin-top: $spacing-lg; height: 40vh; display: flex !important; flex-grow: 0; opacity: 1 !important; } // Ensure visible when stacked
+
+    // Slider open on large tablet - Analysis disappears, CPT/ICD take 50%
+    &.sliderIsOpen {
+        padding-left: $spacing-lg; // Reset padding
+        margin-left: $slider-width; // Still push content
+        flex-wrap: nowrap; // Prevent wrapping
+        .panelAnalysis { // Ensure Analysis is hidden via CSS too
+           flex-basis: 0 !important; flex-grow: 0 !important; padding: 0 !important; margin: 0 !important; border: none !important; overflow: hidden !important; opacity: 0 !important; width: 0 !important; min-width: 0 !important;
+        }
+        .panelCpt, .panelIcd { flex-basis: 50%; flex-grow: 1; } // Take 50% each
+    }
+  }
+  .sliderToggleButton { top: $spacing-xl; left: $spacing-sm; transform: translateY(-50%);}
+  .topRightActions { top: $spacing-md; right: $spacing-lg; gap: $spacing-sm;}
+}
+
+@include media-breakpoint-down($breakpoint-md) {
+  // Stack everything vertically on smaller screens
+  .codingModule { height: auto; min-height: 100vh; }
+  .mainContent {
+      flex-direction: column; height: auto; overflow-y: auto;
+      padding: $spacing-lg; padding-top: calc(#{$spacing-lg} + 40px + #{$spacing-md});
+      gap: $spacing-lg; flex-wrap: nowrap; @include subtle-scrollbar();
+      margin-left: 0 !important; // No margin push when stacked
+
+        .panel { flex-basis: auto !important; width: 100%; height: auto; min-height: 45vh; flex-grow: 0 !important; margin-top: 0 !important; &.panelAnalysis { display: flex !important; min-height: 40vh; opacity: 1 !important;} } // Analysis always visible when stacked
+
+        // Slider simply overlays on mobile, no layout change needed for main content
+        &.sliderIsOpen {
+            margin-left: 0; padding-left: $spacing-lg;
+            // Analysis panel is part of the content underneath the fixed slider
+            .panelAnalysis { display: flex !important; opacity: 1 !important; } // Ensure it stays visible
+        }
+  }
+   .sliderToggleButton { top: $spacing-lg; left: $spacing-lg; transform: none; }
+   .topRightActions { top: $spacing-lg; right: $spacing-lg; button span { display: none; } button { min-width: 40px; padding: $spacing-sm;} }
+}

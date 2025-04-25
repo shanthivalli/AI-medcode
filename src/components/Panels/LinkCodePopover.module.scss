@@ -1,0 +1,100 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.popover {
+  background-color: $color-background;
+  border-radius: $border-radius-base;
+  box-shadow: $shadow-lg;
+  z-index: $z-index-tooltip; // Use tooltip or higher z-index
+  min-width: 300px;
+  max-width: 400px;
+  max-height: 50vh; // Limit height
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Prevent content spill
+  border: 1px solid $color-border;
+  // Position will be set by inline style from JS
+   animation: fadeInScale 0.2s ease-out;
+   transform-origin: top left; // Adjust based on typical anchor position
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+
+.popoverHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-lg;
+  border-bottom: 1px solid $color-border;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-base;
+  flex-shrink: 0;
+
+   button { margin: -$spacing-xs;} // Adjust close button clickable area
+}
+
+.popoverContent {
+  padding: $spacing-lg;
+  overflow-y: auto;
+  flex-grow: 1;
+  @include subtle-scrollbar();
+}
+
+.instruction {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $spacing-md;
+}
+
+.icdList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px; // Scrollable list height limit
+    overflow-y: auto;
+     @include subtle-scrollbar();
+
+    li {
+        margin-bottom: $spacing-sm;
+    }
+}
+
+.icdLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: $spacing-sm;
+    width: 100%;
+
+    // Hide actual checkbox, style the chip based on state
+    .checkbox {
+        appearance: none;
+        position: absolute; // Hide it off screen or using opacity
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .icdChip {
+        flex-grow: 1; // Allow chip to take width
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        // Chip component already handles visual state based on props
+    }
+
+    // &:hover .icdChip {
+    //     // Add hover effect if desired, e.g., slightly darker border/bg
+    //     // Be careful not to conflict with selected state styles
+    // }
+}
+
+
+.popoverFooter {
+  padding: $spacing-sm $spacing-lg;
+  border-top: 1px solid $color-border;
+  text-align: right;
+  flex-shrink: 0;
+}

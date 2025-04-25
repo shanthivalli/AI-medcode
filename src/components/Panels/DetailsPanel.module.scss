@@ -1,0 +1,14 @@
+// /src/components/Panels/DetailsPanel.module.scss
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.panelOverlay { position: fixed; inset: 0; background-color: rgba($color-dark, 0.3); z-index: $z-index-overlay; cursor: pointer; animation: fadeInOverlay 0.3s ease-in-out; }
+@keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+.detailsPanel { position: fixed; top: 0; right: 0; bottom: 0; width: $details-panel-width; max-width: 90vw; background-color: $color-background; box-shadow: $shadow-lg; z-index: $z-index-panel; display: flex; flex-direction: column; overflow: hidden; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); &.isOpen { transform: translateX(0); } &:focus { outline: none; } }
+.panelHeader { display: flex; justify-content: space-between; align-items: center; padding: $spacing-lg $spacing-xl; border-bottom: 1px solid $color-border; flex-shrink: 0; }
+.panelTitle { margin: 0; font-size: $font-size-xl; font-weight: $font-weight-semibold; line-height: 1.3; }
+.closeButton { color: $color-text-secondary; margin: -$spacing-sm; &:hover { color: $color-text-primary; background-color: $color-background-hover; } }
+.panelContent { padding: $spacing-lg $spacing-xl $spacing-xxl $spacing-xl; overflow-y: auto; flex-grow: 1; @include subtle-scrollbar();
+   .section { margin-bottom: $spacing-xl; h4 { font-size: $font-size-base; font-weight: $font-weight-semibold; margin-bottom: $spacing-sm; color: $color-primary; display: flex; align-items: center; gap: $spacing-sm; padding-bottom: $spacing-xs; } p, ul { font-size: $font-size-base; color: $color-text-secondary; margin-bottom: $spacing-sm; line-height: 1.6; } p strong { color: $color-text-primary; font-weight: $font-weight-medium; } ul { list-style: disc; padding-left: $spacing-lg; } .relatedList { list-style: none; padding-left: 0; li { padding: $spacing-xs 0; border-bottom: 1px dashed $color-border; &:last-child { border-bottom: none;} } } .note { font-size: $font-size-sm; font-style: italic; color: $color-text-secondary; } }
+}

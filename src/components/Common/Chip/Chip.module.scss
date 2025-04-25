@@ -1,0 +1,13 @@
+// /src/components/Common/Chip/Chip.module.scss
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.chip { display: inline-flex; align-items: center; padding: $spacing-xs $spacing-sm; border-radius: 16px; font-size: $font-size-sm; font-weight: $font-weight-medium; line-height: 1.4; cursor: default; white-space: nowrap; vertical-align: middle; transition: $transition-color;
+  &.small { padding: 0 $spacing-xs; font-size: calc(#{$font-size-sm} * 0.9); border-radius: 12px; }
+//   &.filled { /* Defined by color */ } 
+  &.outlined { background-color: transparent; border: 1px solid; }
+  @mixin chip-color-variant($bg, $text, $border: $bg) { &.filled { background-color: $bg; color: $text; border-color: $bg; } &.outlined { border-color: $bg; color: $bg; } .deleteButton { color: rgba($text, 0.7); &:hover { color: $text; background-color: rgba($text, 0.1); } &.outlined { color: rgba($bg, 0.7); &:hover { color: $bg; background-color: rgba($bg, 0.1); } } } }
+  &.primary { @include chip-color-variant(rgba($color-primary, 0.15), $color-primary); } &.secondary { @include chip-color-variant(rgba($color-secondary, 0.15), $color-secondary); } &.success { @include chip-color-variant(rgba($color-success, 0.15), darken($color-success, 10%)); } &.warning { @include chip-color-variant(rgba($color-warning, 0.15), darken($color-warning, 15%)); } &.danger { @include chip-color-variant(rgba($color-danger, 0.15), $color-danger); } &.info { @include chip-color-variant(rgba($color-info, 0.15), $color-info); }
+  .chipIcon { margin-right: $spacing-xs; font-size: 1.1em; line-height: 1; } .chipLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .deleteButton { @include button-reset; margin-left: $spacing-xs; margin-right: -$spacing-xs; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; transition: $transition-color; &:focus-visible { outline: none; box-shadow: 0 0 0 2px $color-background, 0 0 0 4px $color-primary; } }
+}
