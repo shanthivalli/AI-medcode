@@ -16,6 +16,11 @@
 
   @include slide-in('left');
   &:focus { outline: none; }
+
+  &.isEmrExpanded {
+    width: 90vw;
+    max-width: 1200px;
+  }
 }
 
 .sliderHeader { display: flex; justify-content: space-between; align-items: center; padding: $spacing-md $spacing-lg; border-bottom: 1px solid $color-border; flex-shrink: 0; }
@@ -32,7 +37,7 @@
     background-color: $color-background-hover;
   } 
   @include focus-visible-ring($color-primary, 1px);
-  
+
   svg {
     width: 18px;
     height: 18px;
@@ -53,8 +58,23 @@
 .emrSection { margin-bottom: $spacing-lg; flex-shrink: 0; display: flex; flex-direction: column; flex-grow: 1; min-height: 250px; }
 .emrHeader { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; .sectionTitle { border-bottom: none; padding-bottom: 0; margin-bottom: $spacing-sm; } }
 // .fullscreenButton { /* Removed as button is gone */ }
-.textAreaWrapper { position: relative; display: flex; flex-grow: 1; min-height: 0; }
+.textAreaWrapper { position: relative; display: flex; flex-grow: 1; min-height: 0; transition: height 0.3s ease; }
 .chartTextArea { width: 100%; flex-grow: 1; border: 1px solid $color-border; border-radius: $border-radius-sm; padding: $spacing-sm $spacing-md; font-size: inherit; resize: vertical; min-height: 150px; overflow-y: auto; line-height: 1.6; &:focus { border-color: $color-primary; box-shadow: 0 0 0 2px $color-focus-ring; } padding-top: $spacing-sm; &:focus, &:not(:placeholder-shown) { padding-top: $spacing-sm; } @include subtle-scrollbar(); }
+
+.isEmrExpanded .emrSection .textAreaWrapper {
+    height: calc(80vh - 180px);
+  }
+
+.chartTextArea {
+  min-height: 200px;
+  resize: vertical;
+
+  &.isExpanded {
+    resize: none;
+    height: 100%;
+    font-size: 1.1em;
+  }
+}
 
 .actionFooter { padding: $spacing-lg; border-top: 1px solid $color-border; flex-shrink: 0; background-color: $color-light; }
 .generateButton { width: 100%; }

@@ -91,18 +91,20 @@ const EncounterSlider = ({
                 </Button> 
             </Tooltip>
             <h2 id="encounter-details-title" className={styles.title}>Encounter Details</h2>
-            <Tooltip content={"Exit Expanded View (Esc)"} position={"left"}> 
-                <Button 
-                    variant="text" 
-                    iconOnly 
-                    size="small" 
-                    onClick={onToggleEmrExpanded} 
-                    aria-label={"Exit Expanded EMR View"} 
-                    className={styles.exitExpandedButton}
-                > 
-                    <Icon name={'minimize'} /> 
-                </Button> 
-            </Tooltip>
+            {isEmrExpanded && (
+              <Tooltip content={"Exit Expanded View (Esc)"} position={"left"}> 
+                  <Button 
+                      variant="text" 
+                      iconOnly 
+                      size="small" 
+                      onClick={onToggleEmrExpanded} 
+                      aria-label={"Exit Expanded EMR View"} 
+                      className={styles.exitExpandedButton}
+                  > 
+                      <Icon name={'minimize'} /> 
+                  </Button> 
+              </Tooltip>
+            )}
         </div>
 
         {/* Content Area */}
@@ -112,11 +114,20 @@ const EncounterSlider = ({
             <section className={`${styles.section} ${styles.emrSection}`}>
                  <div className={styles.emrHeader}>
                      <h3 className={styles.sectionTitle}><Icon name="clipboard"/> EMR Chart</h3>
-                      <Tooltip content={"Expand EMR View"} position={"left"}>
-                          <Button variant="text" iconOnly size="small" onClick={onToggleEmrExpanded} aria-label={"Expand EMR View"} className={styles.enterExpandedButton} >
+                     {!isEmrExpanded && (
+                       <Tooltip content={"Expand EMR View"} position={"left"}>
+                          <Button 
+                            variant="text" 
+                            iconOnly 
+                            size="small" 
+                            onClick={onToggleEmrExpanded} 
+                            aria-label={"Expand EMR View"} 
+                            className={styles.enterExpandedButton}
+                          >
                              <Icon name={'maximize'} />
                           </Button>
-                      </Tooltip>
+                       </Tooltip>
+                     )}
                  </div>
                  <div className={`${styles.textAreaWrapper}`}>
                      <TextArea
