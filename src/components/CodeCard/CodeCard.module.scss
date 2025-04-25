@@ -35,10 +35,23 @@
     }
 
     &:hover {
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 8px solid transparent;
+        border-top-color: $color-border;
+        margin-bottom: -1px;
+        z-index: 11;
+      }
+
       &::after {
         content: attr(data-description);
+        display: block;
         position: absolute;
-        bottom: 120%;
+        bottom: calc(100% + 8px);
         left: 50%;
         transform: translateX(-50%);
         background: $color-background;
@@ -48,6 +61,7 @@
         z-index: 10;
         width: max-content;
         max-width: 300px;
+        min-width: 200px;
         font-size: $font-size-sm;
         color: $color-text-primary;
         border: 1px solid $color-border;
