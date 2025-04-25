@@ -45,15 +45,24 @@
   }
 }
 
+.codeListContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
 .listContent {
   padding: $spacing-sm;
   overflow-y: auto;
   flex-grow: 1;
 
   &.icdGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: $spacing-sm;
-    padding: $spacing-sm;
+    .list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: $spacing-sm;
+      padding: $spacing-sm;
+    }
   }
 }

@@ -14,6 +14,8 @@
   &.icdCard {
     background-color: $color-subtle-card-bg;
     margin-bottom: 0;
+    height: fit-content;
+    width: 100%;
 
     .description {
       font-size: $font-size-sm;
