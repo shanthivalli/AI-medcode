@@ -22,7 +22,9 @@ const CodeCard = ({ codeData, type, onRemove, onShowDetails, linkedIcdIds = [], 
   const handleCardClick = (e) => { if (e.target.closest(`.${styles.actionButton}, .${styles.linkDropdown}`)) { return; } onShowDetails(); };
   const handleRemoveClick = (event) => { 
     event.stopPropagation(); 
-    onRemove(id); 
+    if (onRemove) {
+      onRemove(id);
+    }
   };
   const toggleLinkDropdown = (event) => { event.stopPropagation(); setIsLinkDropdownOpen(prev => !prev); }
   const handleIcdToggle = (icdId) => { setSelectedIcds(prev => { const newSet = new Set(prev); if (newSet.has(icdId)) { newSet.delete(icdId); } else { newSet.add(icdId); } if (onLinkUpdateInternal) { onLinkUpdateInternal(id, Array.from(newSet)); } return newSet; }); };

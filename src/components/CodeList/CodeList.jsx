@@ -60,9 +60,9 @@ const CodeList = ({
                     <CodeCard
                         key={codeData.id}
                         codeData={codeData}
-                        type={type} // Pass type directly
-                        onRemove={() => onRemove(type, codeData.id)} // Pass type directly
-                        onShowDetails={() => onShowDetails(codeData, type)} // Pass type directly
+                        type={type}
+                        onRemove={(id) => onRemove(type, id)}
+                        onShowDetails={() => onShowDetails(codeData, type)}
                         // Pass linking props only if CPT
                         onLinkUpdateInternal={type === 'cpt' ? onLinkUpdateInternal : undefined}
                         linkedIcdIds={type === 'cpt' ? codeLinks?.[codeData.id] || [] : undefined}
