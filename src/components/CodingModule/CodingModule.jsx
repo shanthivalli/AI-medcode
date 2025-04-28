@@ -27,8 +27,17 @@ function CodingModule() {
   const [isEmrExpanded, setIsEmrExpanded] = useState(false); // State for slider internal logic
   const [encounterData, setEncounterData] = useState({ /* ... initial ... */ });
   const [chartText, setChartText] = useState('Patient presents complaining of cough...');
-  const [providerCptCodes, setProviderCptCodes] = useState([]);
-  const [providerIcdCodes, setProviderIcdCodes] = useState([]);
+  // Set provider codes only once on load (dummy data for demo)
+  const [providerCptCodes] = useState([
+    { code: '99213', modifiers: ['25'], units: 2 },
+    { code: '93000', modifiers: [], units: 1 },
+    { code: '99214', modifiers: ['59'], units: 1 }
+  ]);
+  const [providerIcdCodes] = useState([
+    { code: 'J45.909' },
+    { code: 'A01.1' },
+    { code: 'B02.2' }
+  ]);
   const [allCptCodes, setAllCptCodes] = useState([]);
   const [allIcdCodes, setAllIcdCodes] = useState([]);
   const [removedCodeIds, setRemovedCodeIds] = useState(new Set());
@@ -44,6 +53,9 @@ function CodingModule() {
   const [detailsPanelState, setDetailsPanelState] = useState({ isOpen: false, content: null });
   const [alertPanelOpen, setAlertPanelOpen] = useState(false);
   const [addCodeModalState, setAddCodeModalState] = useState({ isOpen: false, type: null });
+  const [analysisVisible, setAnalysisVisible] = useState(false);
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
+  const [existingCodes, setExistingCodes] = useState([]);
 
   // --- Callbacks ---
   // --- FIX: Verify handleGenerate Logic ---
@@ -73,9 +85,9 @@ function CodingModule() {
         setAllIcdCodes(results.icdCodes || []);
         setAnalysisData(results.analysisData || {});
         setAlerts(results.alerts || []);
-        setProviderCptCodes(results.providerCptCodes || []);
-        setProviderIcdCodes(results.providerIcdCodes || []);
-        // Update loading states individually if needed, otherwise reset at end
+        // Provider codes are NOT updated here anymore
+        // setProviderCptCodes(results.providerCptCodes || []);
+        // setProviderIcdCodes(results.providerIcdCodes || []);
 
       } catch (error) {
         console.error("handleGenerate: Error fetching AI suggestions:", error);
@@ -92,6 +104,10 @@ function CodingModule() {
   // Other callbacks (Keep as before)
   const handleRemoveCode = useCallback((type, codeId) => {
     setRemovedCodeIds(prev => new Set([...prev, codeId]));
+    
+    // Also remove from existingCodes
+    setExistingCodes(prev => prev.filter(code => code.id !== codeId));
+    
     // Also clean up any code links if it's an ICD code
     if (type === 'icd') {
       setCodeLinks(prev => {
@@ -118,7 +134,35 @@ function CodingModule() {
       setAllIcdCodes(prev => [...prev, codeInfo]);
     }
   }, []);
-  const handleAddCodeFromAnalysis = useCallback((codeInfo, type) => { /* ... */ }, [allCptCodes, allIcdCodes, removedCodeIds, handleAddManualCode]);
+  const handleAddCodeFromAnalysis = (code, codeType) => {
+    // Check if code already exists
+    if (existingCodes.some(existingCode => existingCode.code === code)) {
+      return;
+    }
+
+    // Generate a unique ID for the new code
+    const codeId = `${codeType}-${code}-${Date.now()}`;
+
+    // Add the new code
+    const newCode = {
+      id: codeId,
+      code,
+      codeType,
+      source: 'analysis',
+      timestamp: new Date().toISOString()
+    };
+
+    setExistingCodes(prev => [...prev, newCode]);
+    
+    // Add to appropriate section based on codeType
+    if (codeType === 'ICD') {
+      setAllIcdCodes(prev => [...prev, newCode]);
+    } else if (codeType === 'CPT') {
+      setAllCptCodes(prev => [...prev, newCode]);
+    } else if (codeType === 'HCPCS') {
+      // Handle HCPCS addition
+    }
+  };
   const handleLinkUpdateInternal = useCallback((cptId, newLinkedIcdIds) => { /* ... */ }, []);
   const handleSubmit = useCallback((isFlagged = false) => { /* ... */ }, [allCptCodes, allIcdCodes, removedCodeIds, codeLinks, chartText, encounterData]);
   const openSlider = useCallback(() => { setIsSliderOpen(true); setIsEmrExpanded(false); }, []);
@@ -135,6 +179,15 @@ function CodingModule() {
   const closeAddCodeModal = useCallback(() => { setAddCodeModalState({ isOpen: false, type: null }); }, []);
   const toggleEmrExpanded = useCallback(() => { setIsEmrExpanded(prev => !prev); if (!isSliderOpen) setIsSliderOpen(true); }, [isSliderOpen]);
 
+  const handleShowAnalysis = async () => {
+    setIsLoadingAnalysis(true);
+    // Simulate API call or use your real fetch function
+    const data = await fetchAiSuggestions(chartText); // or your real fetch function for analysis
+    setAnalysisData(data.analysisData || {});
+    setIsLoadingAnalysis(false);
+    setAnalysisVisible(true);
+  };
+
   // --- Memos / Derived State ---
   const displayedCptCodes = useMemo(() => allCptCodes.filter(c => !removedCodeIds.has(c.id)), [allCptCodes, removedCodeIds]);
   const displayedIcdCodes = useMemo(() => allIcdCodes.filter(c => !removedCodeIds.has(c.id)), [allIcdCodes, removedCodeIds]);
@@ -144,9 +197,41 @@ function CodingModule() {
   return (
     <div className={styles.codingModule}>
        {/* Slider Trigger Button */}
-       {!isSliderOpen && ( <Tooltip content="Open Encounter Details" position="right"> <Button onClick={openSlider} className={styles.sliderToggleButton} aria-label="Open Encounter Details" variant="light"> <Icon name='chevron-right' size="1.8em" /> </Button> </Tooltip> )}
+       {!isSliderOpen && (
+         <Tooltip content="Open Encounter Details" position="right">
+           <Button 
+             onClick={openSlider} 
+             className={styles.sliderToggleButton} 
+             aria-label="Open Encounter Details" 
+             variant="light"
+             iconLeft="chevron-right"
+           />
+         </Tooltip>
+       )}
        {/* Top Right Action Buttons */}
-       <div className={styles.topRightActions}> <Tooltip content={`${alerts.length} Alert${alerts.length !== 1 ? 's' : ''}`} position="left"> <Button onClick={toggleAlertPanel} className={styles.alertButton} aria-label={`Show ${alerts.length} Alerts`} variant={alerts.length > 0 ? 'warning' : 'light'} iconOnly > <Icon name="bell" size="1.3em"/> {alerts.length > 0 && <span className={styles.alertCount}>{alerts.length}</span>} </Button> </Tooltip> <Button variant="success" size="medium" iconLeft="send" onClick={() => handleSubmit(false)} disabled={isLoading.suggestions} > Submit </Button> <Button variant="warning" size="medium" iconLeft="flag" onClick={() => handleSubmit(true)} disabled={isLoading.suggestions} > Submit w/ Flag </Button> </div>
+       <div className={styles.topRightActions}> 
+         {/* Alert Button */}
+         <button
+           className={styles.alertButton}
+           onClick={() => setAlertPanelOpen(!alertPanelOpen)}
+           data-has-alerts={alerts.length > 0}
+           aria-label={`${alerts.length} alerts`}
+           title={`${alerts.length} alerts`}
+         >
+           <Icon name="bell" />
+           {alerts.length > 0 && (
+             <span className={styles.alertCount}>
+               {alerts.length}
+             </span>
+           )}
+         </button>
+         <Button variant="success" size="medium" iconLeft="send" onClick={() => handleSubmit(false)} disabled={isLoading.suggestions} > 
+           Submit 
+         </Button> 
+         <Button variant="warning" size="medium" iconLeft="flag" onClick={() => handleSubmit(true)} disabled={isLoading.suggestions} > 
+           Submit w/ Flag 
+         </Button> 
+       </div>
 
       {/* Render Slider only when isSliderOpen is true */}
       {isSliderOpen && (
@@ -169,7 +254,14 @@ function CodingModule() {
       <main className={`${styles.mainContent} ${isSliderOpen ? styles.sliderIsOpen : ''}`}>
         <section className={`${styles.panel} ${styles.panelCpt}`}> <CodeList title="CPT Codes" codes={displayedCptCodes} type="cpt" onRemove={handleRemoveCode} onShowDetails={showDetailsPanel} onAddCode={openAddCodeModal} onLinkUpdateInternal={handleLinkUpdateInternal} codeLinks={codeLinks} availableIcdsForLinking={displayedIcdCodes} isLoading={isLoading.suggestions} /> </section>
         <section className={`${styles.panel} ${styles.panelIcd}`}> <CodeList title="ICD Codes" codes={displayedIcdCodes} type="icd" onRemove={handleRemoveCode} onShowDetails={showDetailsPanel} onAddCode={openAddCodeModal} isLoading={isLoading.suggestions} /> </section>
-        {isAnalysisVisible && ( <section className={`${styles.panel} ${styles.panelAnalysis}`}> <IndepthAnalysis analysisData={analysisData} isLoading={isLoading.analysis} onAddCodeFromAnalysis={handleAddCodeFromAnalysis} /> </section> )}
+        {isAnalysisVisible && ( <section className={`${styles.panel} ${styles.panelAnalysis}`}> <IndepthAnalysis
+          analysisData={analysisData}
+          isLoading={isLoadingAnalysis}
+          analysisVisible={analysisVisible}
+          onShowAnalysis={handleShowAnalysis}
+          onAddCodeFromAnalysis={handleAddCodeFromAnalysis}
+          existingCodes={existingCodes}
+        /> </section> )}
       </main>
 
       {/* Other Panels/Modals */}

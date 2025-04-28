@@ -1,5 +1,6 @@
 // /src/components/EncounterSlider/EncounterSlider.module.scss
-// Simplified - only normal state styles
+// Merging working horizontal fix (absolute position normal state - response #54)
+// with working vertical fix (flex-grow + collapse sections - response #56/#58)
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
 
@@ -13,77 +14,585 @@
   display: flex; flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  min-height: 0;
 
-  @include slide-in('left');
+  transition: transform 0.3s ease-in-out, width 0.35s ease-in-out; // Keep width transition for consistency if needed later
+  transform: translateX(-100%);
+  &.isOpen { transform: translateX(0); }
   &:focus { outline: none; }
-
-  &.isEmrExpanded {
-    width: 90vw;
-    max-width: 1200px;
-  }
 }
 
-.sliderHeader { display: flex; justify-content: space-between; align-items: center; padding: $spacing-md $spacing-lg; border-bottom: 1px solid $color-border; flex-shrink: 0; }
+// --- Header ---
+.sliderHeader { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: $spacing-md $spacing-lg; 
+    border-bottom: 1px solid $color-border; 
+    flex-shrink: 0; 
+    position: relative;
+}
+
 .internalCloseButton { 
-  color: $color-text-primary; 
-  flex-shrink: 0; 
-  background-color: $color-light;
-  padding: $spacing-sm;
-  border: 1px solid $color-border;
-  border-radius: $border-radius-sm;
-  margin-right: $spacing-sm;
-  &:hover { 
-    color: $color-primary;
-    background-color: $color-background-hover;
-  } 
-  @include focus-visible-ring($color-primary, 1px);
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
+    color: #000000; 
+    flex-shrink: 0; 
+    &:hover { 
+        color: lighten(#000000, 30%); 
+        background-color: $color-background-hover; 
+    } 
+    @include focus-visible-ring($color-primary, 1px);
+    
+    // Hide when EMR is expanded
+    .sliderPanel.isEmrExpanded & { 
+        display: none; 
+    }
 }
-.title { margin: 0; font-size: $font-size-xl; font-weight: $font-weight-semibold; text-align: center; flex-grow: 1; padding-left: 40px; padding-right: 40px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.headerSpacer { width: 36px; flex-shrink: 0; visibility: hidden; }
 
-.sliderContent { flex-grow: 1; overflow-y: auto; padding: $spacing-lg; font-size: $font-size-base * 1.05; display: flex; flex-direction: column; min-height: 0; @include subtle-scrollbar(); }
-.section { margin-bottom: $spacing-xl; flex-shrink: 0; }
-.sectionTitle { font-weight: $font-weight-semibold; color: $color-primary; margin-bottom: $spacing-md; display: flex; align-items: center; gap: $spacing-sm; border-bottom: 1px solid $color-border; padding-bottom: $spacing-sm; font-size: inherit; }
-.detailGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: $spacing-sm $spacing-lg; line-height: 1.6; font-size: inherit; div { color: $color-text-secondary; strong { color: $color-text-primary; font-weight: $font-weight-medium; margin-right: $spacing-xs; } } }
+.title { 
+    margin: 0; 
+    font-size: $font-size-xl; 
+    font-weight: $font-weight-semibold; 
+    text-align: center; 
+    flex-grow: 1; 
+    padding-left: 40px; 
+    padding-right: 40px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.exitExpandedButton { 
+    display: none; // Hidden by default
+    position: absolute; 
+    top: 50%; 
+    left: $spacing-lg; // Position on the left like the close button
+    transform: translateY(-50%); 
+    color: $color-text-secondary; 
+    flex-shrink: 0; 
+    &:hover { 
+        color: $color-text-primary; 
+        background-color: $color-background-hover; 
+    } 
+    @include focus-visible-ring($color-primary, 1px);
+    
+    // Show when EMR is expanded
+    .sliderPanel.isEmrExpanded & { 
+        display: inline-flex; 
+    }
+}
+
+
+// --- Content Area (Scrollable Flex Column) ---
+.sliderContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+  width: 100%;
+}
+
+// --- Sections within Content ---
+.section {
+    margin-bottom: $spacing-lg;
+    flex-shrink: 0; // Prevent shrinking unless collapsing
+    transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out, margin 0.3s ease-in-out, padding 0.3s ease-in-out, border 0.3s ease-in-out, visibility 0.3s step-end;
+    overflow: hidden; // Needed for collapse transition
+}
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 36px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.08em;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.detailsSectionTitle {
+  padding-left: 4px;
+}
+
+.sectionToggleButton {
+  margin-left: 0;
+  margin-right: 20px;
+  align-self: center;
+  padding: 0 2px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 16px;
+  line-height: 1.4;
+  font-size: 0.98em;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.detailGrid div {
+  color: $color-text-secondary;
+  strong {
+    color: $color-text-primary;
+    font-weight: $font-weight-medium;
+    margin-right: $spacing-xs;
+    text-align: left;
+    display: inline-block;
+  }
+  margin-bottom: 0;
+  text-align: left;
+}
+
 .providerCodeLists { display: grid; grid-template-columns: 1fr; gap: $spacing-md; margin-top: $spacing-sm; @include media-breakpoint-up($breakpoint-sm) { grid-template-columns: 1fr 1fr; } }
 .codeListTitle { font-size: $font-size-sm; font-weight: $font-weight-semibold; color: $color-text-secondary; margin-bottom: $spacing-sm; }
 .chipContainer { display: flex; flex-wrap: wrap; gap: $spacing-xs $spacing-sm; }
 .emptyMessage { font-style: italic; color: $color-text-secondary; margin-top: $spacing-sm; font-size: inherit; }
 
-.emrSection { margin-bottom: $spacing-lg; flex-shrink: 0; display: flex; flex-direction: column; flex-grow: 1; min-height: 250px; }
-.emrHeader { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; .sectionTitle { border-bottom: none; padding-bottom: 0; margin-bottom: $spacing-sm; } }
-// .fullscreenButton { /* Removed as button is gone */ }
-.textAreaWrapper { position: relative; display: flex; flex-grow: 1; min-height: 0; transition: height 0.3s ease; }
-.chartTextArea { width: 100%; flex-grow: 1; border: 1px solid $color-border; border-radius: $border-radius-sm; padding: $spacing-sm $spacing-md; font-size: inherit; resize: vertical; min-height: 150px; overflow-y: auto; line-height: 1.6; &:focus { border-color: $color-primary; box-shadow: 0 0 0 2px $color-focus-ring; } padding-top: $spacing-sm; &:focus, &:not(:placeholder-shown) { padding-top: $spacing-sm; } @include subtle-scrollbar(); }
+// --- EMR Section Specifics ---
+.emrSection {
+    // Allow section to grow vertically to occupy majority of available space
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    position: relative; // Needed for absolute positioning of child
+    overflow: hidden; // Hide potential overflow of absolutely positioned child
+    transition: min-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+    width: 100%; // Ensure full width
+    padding: 0; // Remove padding to maximize space
 
-.isEmrExpanded .emrSection .textAreaWrapper {
-    height: calc(80vh - 180px);
-  }
-
-.chartTextArea {
-  min-height: 200px;
-  resize: vertical;
-
-  &.isExpanded {
-    resize: none;
-    height: 100%;
-    font-size: 1.1em;
-  }
+    // Ensure full width in expanded state
+    .sliderPanel.isEmrExpanded & {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
 }
 
-.actionFooter { padding: $spacing-lg; border-top: 1px solid $color-border; flex-shrink: 0; background-color: $color-light; }
+// Additional class for expanded EMR section
+.emrSectionExpanded {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important; // Grow and shrink as needed
+    height: auto !important; // Let content determine height
+    width: 100% !important; // Take full width
+    min-height: 0 !important; // Allow shrinking below min-height
+    max-width: 100% !important; // Ensure no max-width constraint
+}
+.emrHeader {
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    padding: 0 $spacing-lg $spacing-sm $spacing-lg; // Add horizontal padding to match content area
+    .sectionTitle { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+    .sliderPanel.isEmrExpanded & { display: none; } // Hide header when expanded
+}
+.enterExpandedButton { color: $color-text-secondary; &:hover { color: $color-primary; background-color: $color-background-hover; }
+    .sliderPanel.isEmrExpanded & { display: none; } // Hide enter button when expanded
+}
+
+// --- Text Area Wrapper & Area (Combining Horizontal Fix + Vertical Flex) ---
+.textAreaWrapper {
+    // --- FIX: Absolute position in NORMAL state ---
+    position: absolute;
+    // Calculate top based on estimated header height + gap
+    top: 45px;
+    left: 0;
+    right: 0;
+    bottom: 0; // Stretch to bottom of relative parent (.emrSection)
+    width: 100%; // Ensure full width
+    box-sizing: border-box; // Ensure padding doesn't add to width
+    // --- End Normal State Positioning ---
+
+    // Use flex to allow textarea inside to fill it
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0; // Allow shrinking if needed
+    padding: 8px;
+
+    // --- Override for Expanded State ---
+    .sliderPanel.isEmrExpanded & {
+        position: static !important;
+        height: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        flex: 1 1 auto !important;
+        display: flex !important;
+        margin: 0 !important;
+        min-width: 0 !important;
+    }
+    // --- End Expanded State Override ---
+}
+.chartTextArea {
+    box-sizing: border-box !important; // Force border-box to include padding in width/height calculations
+    width: 100% !important; // Force full width
+    height: 100% !important; // Fill wrapper height
+    border: 1px solid $color-border;
+    border-radius: $border-radius-sm;
+    padding: $spacing-sm $spacing-md; // Standard padding
+    font-size: inherit;
+    resize: vertical; // Allow vertical resizing in normal mode
+    min-height: 150px; // Minimum height
+    overflow: auto; // Enable both scrollbars when content exceeds dimensions
+    white-space: pre-wrap; // Preserve whitespace but wrap text
+    word-break: break-word; // Break words to prevent horizontal overflow
+    line-height: 1.6;
+    &:focus { 
+        border-color: $color-primary; 
+        box-shadow: 0 0 0 2px $color-focus-ring; 
+    }
+    @include subtle-scrollbar(); // Custom scrollbar styling
+    transition: font-size 0.3s ease, border 0.3s ease;
+
+    // Styles specifically when expanded
+    .sliderPanel.isEmrExpanded & {
+        height: 100% !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        flex: 1 1 auto !important;
+        resize: none !important;
+        border: 1px solid $color-border !important;
+        border-radius: $border-radius-sm !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: $color-white !important;
+        font-size: $font-size-base !important;
+        @include subtle-scrollbar();
+        min-width: 0 !important;
+    }
+}
+
+// --- Footer ---
+.actionFooter { 
+    padding: $spacing-lg; 
+    border-top: 1px solid $color-border; 
+    flex-shrink: 0; 
+    background-color: $color-light;
+    .sliderPanel.isEmrExpanded & { display: none; } // Hide footer when expanded
+}
 .generateButton { width: 100%; }
 
+
+// --- Styles Activated When isEmrExpanded class is on sliderPanel ---
+.sliderPanel.isEmrExpanded {
+    // Keep the slider panel at its original width ($slider-width)
+    // No width override needed - maintain the width defined in the main .sliderPanel rule
+
+    // Collapse Details and Provider sections
+    .detailsSection.isCollapsed,
+    .providerSection.isCollapsed {
+        flex-grow: 0 !important; 
+        flex-shrink: 0 !important; 
+        max-height: 0px !important; 
+        opacity: 0 !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+        border: none !important; 
+        visibility: hidden !important; 
+        transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out, 
+                   margin 0.3s ease-in-out, padding 0.3s ease-in-out, 
+                   border 0.3s ease-in-out, visibility 0.3s step-end;
+        transition-delay: 0s, 0s, 0s, 0s, 0s, 0.3s;
+    }
+
+    // Ensure EMR section fills available space
+    .emrSection {
+        min-height: 0 !important; // Remove min height limit
+        padding: 0 !important; // Remove padding to maximize space
+        margin: 0 !important; // Remove margins
+        height: 100% !important; // Ensure it takes full height
+        flex: 1 1 auto !important; // Make it grow and shrink as needed
+        width: 100% !important; // Ensure full width
+    }
+
+    // Hide the normal close button and show the exit expanded button
+    .internalCloseButton {
+        display: none !important;
+    }
+
+    // Hide the footer when expanded
+    .actionFooter {
+        display: none !important;
+    }
+}
+
+// --- Slider Overlay ---
 .sliderOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba($color-dark, 0.2); z-index: $z-index-panel - 1; cursor: pointer; animation: fadeInOverlay 0.3s ease-in-out; }
 @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
 
+
 // Responsive adjustments
 @include media-breakpoint-down($breakpoint-sm) {
-   .sliderPanel { width: 90vw; }
+   .sliderPanel:not(.isEmrExpanded) { width: 90vw; }
+   .sliderPanel.isEmrExpanded { width: 90vw; } // Keep consistent width in expanded mode on mobile
    .detailGrid { grid-template-columns: 1fr; }
+   
+   // Adjust padding for smaller screens
+   .textAreaWrapper {
+      padding: 0 $spacing-sm;
+   }
+   
+   // Ensure minimum height is appropriate for smaller screens
+   .emrSection {
+      min-height: 200px;
+   }
+}
+
+.sliderPanel.isEmrExpanded .textAreaWrapper {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sliderPanel.isEmrExpanded .chartTextArea {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sliderPanel.isEmrExpanded .inputWrapper {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sliderPanel.isEmrExpanded .textarea,
+.sliderPanel.isEmrExpanded textarea {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.sliderPanel.isEmrExpanded .sliderContent {
+  padding: 0 !important;
+}
+
+.sliderPanel.isEmrExpanded .emrSection {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.sliderPanel.isEmrExpanded .textAreaWrapper,
+.sliderPanel.isEmrExpanded .inputWrapper {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+}
+
+.sliderPanel.isEmrExpanded .chartTextArea,
+.sliderPanel.isEmrExpanded .textarea,
+.sliderPanel.isEmrExpanded textarea {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+.sliderPanel:not(.isEmrExpanded) .sliderContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+}
+
+.sliderPanel:not(.isEmrExpanded) .emrSection {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.sliderPanel:not(.isEmrExpanded) .textAreaWrapper,
+.sliderPanel:not(.isEmrExpanded) .inputWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.sliderPanel:not(.isEmrExpanded) .chartTextArea,
+.sliderPanel:not(.isEmrExpanded) .textarea,
+.sliderPanel:not(.isEmrExpanded) .FlexibleTextArea {
+  flex: 1 1 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
+  resize: none;
+  display: block;
+}
+
+.sliderPanel:not(.isEmrExpanded) .textAreaWrapper {
+  height: 300px !important;
+}
+
+.FlexibleTextArea {
+  flex: 1 1 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
+  resize: none;
+  display: block;
+  font-size: 1rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow-y: auto;
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .sliderPanel {
+    width: 100vw;
+    min-width: 0;
+  }
+  .textAreaWrapper {
+    padding: 4px;
+  }
+  .FlexibleTextArea {
+    font-size: 0.95rem;
+    padding: 4px;
+  }
+}
+
+.providerCodeScrollable {
+  max-height: 150px;
+  overflow-y: auto;
+  @include subtle-scrollbar();
+}
+
+.providerSection {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 12px 16px 16px 16px;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+
+.providerCodeLists {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 8px 24px;
+  align-items: flex-start;
+  margin-top: 0;
+}
+
+.codeListTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  margin-bottom: 4px;
+  margin-top: 0;
+}
+
+.providerCodeScrollable {
+  max-height: 120px;
+  overflow-y: auto;
+  @include subtle-scrollbar();
+  margin: 0;
+  padding-left: 16px;
+  background: none;
+}
+
+.providerCodeScrollable ul,
+.providerCodeScrollable table {
+  margin: 0;
+}
+
+.providerCodeScrollable li {
+  margin-bottom: 2px;
+  font-size: 1em;
+}
+
+.providerCodeScrollable table {
+  font-size: 0.98em;
+}
+
+.providerCodeScrollable th, .providerCodeScrollable td {
+  padding: 2px 6px;
+}
+
+.sectionTitle {
+  margin-bottom: 8px;
+  padding-bottom: 2px;
+  font-size: 1.08em;
+}
+
+.section {
+  margin-bottom: 12px;
+  padding-bottom: 0;
+}
+
+.sliderHeader {
+  padding-bottom: 8px;
+}
+
+.detailsSection {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 8px 12px 10px 12px;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }

@@ -9,3 +9,11 @@
     :global(.tabContent) { flex-grow: 1; overflow-y: auto; padding: $spacing-lg 0 0 0; }
     :global(.tabButton) { padding: $spacing-md; }
 }
+
+.analysisHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}

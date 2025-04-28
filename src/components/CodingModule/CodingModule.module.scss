@@ -10,8 +10,75 @@
 
 // --- Top Right Action Area ---
 .topRightActions { position: absolute; top: $spacing-lg; right: $spacing-lg; z-index: $z-index-sticky; display: flex; align-items: center; gap: $spacing-md; }
-.alertButton { position: relative; width: 40px; height: 40px; border-radius: 50%; background-color: $color-white; box-shadow: $shadow-sm; &:hover { box-shadow: $shadow-md; } .icon { color: $color-text-secondary; } &.warning .icon { color: $color-warning; } }
-.alertCount { position: absolute; top: -2px; right: -2px; background-color: $color-danger; color: $color-white; border-radius: 50%; font-size: $font-size-sm * 0.9; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: $font-weight-medium; padding: 2px; line-height: 1; border: 1px solid $color-white; box-shadow: $shadow-sm; }
+.alertButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: $color-white;
+  border: 1px solid $color-border;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  box-shadow: $shadow-sm;
+
+  // Default state icon color
+  color: $color-text-secondary;
+
+  // Has alerts state
+  &[data-has-alerts="true"] {
+    color: $color-warning;
+    border-color: rgba($color-warning, 0.3);
+  }
+
+  &:hover {
+    background-color: $color-background-hover;
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    @include focus-visible-ring($color-primary, 2px);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.bellIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.alertCount {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  background: $color-danger;
+  color: $color-white;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid $color-white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transform: translate(0, 0) scale(0.95);
+  transition: transform 0.2s ease;
+
+  &:not(:empty) {
+    transform: translate(0, 0) scale(1);
+  }
+}
 
 // --- Slider Overlay ---
 .sliderOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba($color-dark, 0.2); z-index: $z-index-panel - 1; cursor: pointer; animation: fadeInOverlay 0.3s ease-in-out; }
