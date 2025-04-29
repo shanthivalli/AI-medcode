@@ -3,7 +3,10 @@
 @use 'variables' as *;
 @use 'mixins' as *;
 
-// Basic Reset & Defaults
+/* If using Create React App, import global styles here */
+/* You might already have some resets here */
+
+/* Basic Reset & Defaults */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 100%; }
 body { font-family: $font-family-sans-serif; font-size: $font-size-base; line-height: $line-height-base; color: $color-text-primary; background-color: $color-background-app; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
@@ -13,9 +16,9 @@ p { margin-bottom: $spacing-lg; }
 a { color: $color-primary; text-decoration: none; transition: $transition-color; &:hover { color: darken($color-primary, 10%); } }
 ul, ol { padding-left: $spacing-xl; margin-bottom: $spacing-lg; }
 
-// Apply subtle scrollbar globally to elements with the class
+/* Apply subtle scrollbar globally to elements with the class */
 .scrollable-panel { @include subtle-scrollbar(); }
 
-// Basic focus visible style for common elements
+/* Basic focus visible style for common elements */
 a:not(.no-focus-ring), button:not(.no-focus-ring) { @include focus-visible-ring($color-primary); }
 input, textarea, select { @include focus-visible-ring($color-primary, 1px); }

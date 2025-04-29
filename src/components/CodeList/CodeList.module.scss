@@ -5,7 +5,7 @@
 .codeCard {
   @include card-base; margin-bottom: $spacing-md; padding: $spacing-md $spacing-lg; cursor: pointer; position: relative; transition: $transition-shadow, $transition-color, transform 0.15s ease, background-color 0.2s ease; background-color: $color-background;
   &.icdCard { background-color: $color-subtle-card-bg; }
-  &:hover { border-color: darken($color-border, 5%); box-shadow: $shadow-md; }
+  &:hover { border-color: darken($color-border, 5%); box-shadow: $shadow-base; }
   @include focus-visible-ring($color-primary, 2px);
   &.manual { border-left: 3px solid $color-info; }
 }

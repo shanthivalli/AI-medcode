@@ -8,7 +8,7 @@
 // Basic Card Styling (Modern)
 @mixin card-base {
   background-color: $color-background; border: 1px solid $color-border; border-radius: $border-radius-base; box-shadow: $shadow-sm; transition: $transition-shadow; overflow: hidden;
-  &:hover { box-shadow: $shadow-md; }
+  &:hover { box-shadow: $shadow-base; }
 }
 
 // Flexbox centering
