@@ -2,6 +2,7 @@
 import React from 'react';
 import Modal from '../Common/Modal/Modal';
 import IcdCodeInput from '../Common/IcdCodeInput/IcdCodeInput';
+import CptCodeInput from '../Common/CptCodeInput/CptCodeInput';
 import styles from './AddCodeModal.module.scss';
 
 const AddCodeModal = ({
@@ -28,7 +29,7 @@ const AddCodeModal = ({
       {codeType === 'icd' ? (
         <IcdCodeInput onSave={handleSave} onCancel={onClose} />
       ) : (
-        <div>CPT code input form will go here</div>
+        <CptCodeInput onSave={handleSave} onCancel={onClose} />
       )}
     </Modal>
   );
