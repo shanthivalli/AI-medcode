@@ -7,8 +7,16 @@
 
 // Basic Card Styling (Modern)
 @mixin card-base {
-  background-color: $color-background; border: 1px solid $color-border; border-radius: $border-radius-base; box-shadow: $shadow-sm; transition: $transition-shadow; overflow: hidden;
-  &:hover { box-shadow: $shadow-md; }
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  transition: box-shadow 0.2s ease-in-out;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
 }
 
 // Flexbox centering
@@ -17,13 +25,30 @@
 }
 
 // Responsive media query helper
-@mixin media-breakpoint-up($breakpoint) { @media (min-width: $breakpoint) { @content; } }
-@mixin media-breakpoint-down($breakpoint) { @media (max-width: calc(#{$breakpoint} - 0.02px)) { @content; } }
+@mixin media-breakpoint-up($breakpoint) {
+  @media (min-width: #{$breakpoint}) {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-down($breakpoint) {
+  @media (max-width: #{$breakpoint - 1px}) {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-between($min, $max) {
+  @media (min-width: #{$min}) and (max-width: #{$max - 1px}) {
+    @content;
+  }
+}
 
 // Focus Visible Styling (Accessibility) - Ring Style
-@mixin focus-visible-ring($color: $color-primary, $offset: 2px, $width: 2px) {
-  &:focus { outline: none; }
-  &:focus-visible { outline: none; box-shadow: 0 0 0 #{$offset + $width} $color-background, 0 0 0 #{$offset + $width + $width} rgba($color, 0.5); }
+@mixin focus-visible-ring($color: $color-primary, $width: 2px) {
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 $width rgba($color, 0.4);
+  }
 }
 
 // Modern Input Underline/Border Style (if used)
@@ -36,18 +61,95 @@
 
 // Subtle Scrollbar
 @mixin subtle-scrollbar($track: $color-light, $thumb: $color-secondary, $thumb-hover: darken($color-secondary, 10%)) {
-  &::-webkit-scrollbar { width: 6px; height: 6px; }
-  &::-webkit-scrollbar-track { background: $track; border-radius: 3px; }
-  &::-webkit-scrollbar-thumb { background: $thumb; border-radius: 3px; transition: background-color 0.2s ease; }
-  &::-webkit-scrollbar-thumb:hover { background: $thumb-hover; }
-  scrollbar-width: thin; scrollbar-color: $thumb $track;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: $track;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $thumb;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: $thumb-hover;
+  }
+  scrollbar-width: thin;
+  scrollbar-color: $thumb $track;
 }
 
 // Slide-in animation base (used by EncounterSlider)
 @mixin slide-in($direction: 'right', $duration: 0.3s) {
-    transition: transform $duration ease-in-out;
-    @if $direction == 'right' { transform: translateX(100%); &.isOpen { transform: translateX(0); } }
-    @else if $direction == 'left' { transform: translateX(-100%); &.isOpen { transform: translateX(0); } }
-    @else if $direction == 'top' { transform: translateY(-100%); &.isOpen { transform: translateY(0); } }
-    @else if $direction == 'bottom' { transform: translateY(100%); &.isOpen { transform: translateY(0); } }
+  transition: transform $duration ease-in-out;
+  @if $direction == 'right' {
+    transform: translateX(100%);
+    &.isOpen {
+      transform: translateX(0);
+    }
+  } @else if $direction == 'left' {
+    transform: translateX(-100%);
+    &.isOpen {
+      transform: translateX(0);
+    }
+  } @else if $direction == 'top' {
+    transform: translateY(-100%);
+    &.isOpen {
+      transform: translateY(0);
+    }
+  } @else if $direction == 'bottom' {
+    transform: translateY(100%);
+    &.isOpen {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Flexbox utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Typography utilities
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-wrap {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+// Interactive states
+@mixin interactive {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
 }

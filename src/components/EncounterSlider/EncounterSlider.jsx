@@ -62,7 +62,7 @@ const EncounterSlider = ({
     setIsEmrExpanded(prev => !prev);
   }, []);
 
-  const { encounterNumber = 'N/A', accountNumber = 'N/A', patientName = 'N/A', provider = 'N/A', status = 'N/A', time = 'N/A' } = encounter;
+  const { encounterNumber = 'N/A', accountNumber = 'N/A', provider = 'N/A', status = 'N/A', insurance = 'N/A', dateOfService = 'N/A' } = encounter;
   const hasProviderCodes = providerCptCodes.length > 0 || providerIcdCodes.length > 0;
 
    if (!isOpen) { return null; }
@@ -154,12 +154,12 @@ const EncounterSlider = ({
             </div>
             {detailsExpanded && (
               <div className={styles.detailGrid}>
-                <div><strong>Encounter #:</strong> 123456</div>
-                <div><strong>Account #:</strong> 789012</div>
-                <div><strong>Patient:</strong> John Doe</div>
-                <div><strong>Provider:</strong> Dr. Smith</div>
-                <div><strong>Status:</strong> In Progress</div>
-                <div><strong>Time:</strong> 2024-05-01 10:30 AM</div>
+                <div><strong>Encounter #:</strong> {encounterNumber}</div>
+                <div><strong>Account #:</strong> {accountNumber}</div>
+                <div><strong>Insurance:</strong> {insurance}</div>
+                <div><strong>Provider:</strong> {provider}</div>
+                <div><strong>Status:</strong> {status}</div>
+                <div><strong>Date of Service:</strong> {dateOfService}</div>
               </div>
             )}
           </section>

@@ -4,12 +4,16 @@
 
 .codeCard {
   @include card-base;
+  padding: $spacing-md;
   margin-bottom: $spacing-md;
-  padding: $spacing-sm;
-  cursor: pointer;
-  position: relative;
-  transition: $transition-shadow, $transition-color, transform 0.15s ease, background-color 0.2s ease;
-  background-color: $color-background;
+  background-color: $color-white;
+  border-radius: $border-radius-lg;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
 
   &.icdCard {
     background-color: $color-subtle-card-bg;

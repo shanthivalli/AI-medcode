@@ -1,0 +1,146 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  padding: $spacing-md;
+  background-color: $color-white;
+  border-radius: $border-radius-lg;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+  }
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: $spacing-sm;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-base;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.1);
+  }
+
+  &::placeholder {
+    color: $color-text-secondary;
+  }
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: $color-white;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  box-shadow: $shadow-md;
+  z-index: 1000;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+
+  @include subtle-scrollbar();
+}
+
+.suggestionItem {
+  padding: $spacing-sm;
+  cursor: pointer;
+  display: flex;
+  gap: $spacing-sm;
+  align-items: baseline;
+  border-bottom: 1px solid $color-border;
+  transition: background-color 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover, &.selected {
+    background-color: $color-background-hover;
+  }
+
+  &.selected {
+    background-color: rgba($color-primary, 0.1);
+  }
+
+  .code {
+    font-weight: $font-weight-medium;
+    color: $color-primary;
+    min-width: 60px;
+  }
+
+  .description {
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    flex: 1;
+  }
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+}
+
+.button {
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.cancelButton {
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  color: $color-text-secondary;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-background, 5%);
+  }
+}
+
+.saveButton {
+  background-color: $color-primary;
+  border: 1px solid $color-primary;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-primary, 5%);
+  }
+} 

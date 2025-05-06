@@ -2,27 +2,26 @@
 @use '../../styles/mixins' as *;
 
 .popover {
-  background-color: $color-background;
-  border-radius: $border-radius-base;
+  border-radius: $border-radius-lg;
+  background-color: $color-white;
   box-shadow: $shadow-lg;
-  z-index: $z-index-tooltip; // Use tooltip or higher z-index
+  border: 1px solid $color-border;
+  padding: $spacing-md;
+  max-width: 300px;
+  z-index: $z-index-popover;
   min-width: 300px;
-  max-width: 400px;
   max-height: 50vh; // Limit height
   display: flex;
   flex-direction: column;
   overflow: hidden; // Prevent content spill
-  border: 1px solid $color-border;
-  // Position will be set by inline style from JS
-   animation: fadeInScale 0.2s ease-out;
-   transform-origin: top left; // Adjust based on typical anchor position
+  animation: fadeInScale 0.2s ease-out;
+  transform-origin: top left; // Adjust based on typical anchor position
 }
 
 @keyframes fadeInScale {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
 }
-
 
 .popoverHeader {
   display: flex;
@@ -90,7 +89,6 @@
     //     // Be careful not to conflict with selected state styles
     // }
 }
-
 
 .popoverFooter {
   padding: $spacing-sm $spacing-lg;

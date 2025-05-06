@@ -1,110 +1,36 @@
 // /src/components/Modals/AddCodeModal.jsx
-import React, { useState, useEffect } from 'react';
-import BaseModal from './BaseModal'; // Import BaseModal correctly
-import Button from '../Common/Button/Button';
-import Input from '../Common/Input/Input';
+import React from 'react';
+import Modal from '../Common/Modal/Modal';
+import IcdCodeInput from '../Common/IcdCodeInput/IcdCodeInput';
 import styles from './AddCodeModal.module.scss';
 
 const AddCodeModal = ({
     isOpen,
     onClose,
     onAddCode, // Expects function: (codeInfo: object, codeType: string) => void
-    codeType   // Expects 'cpt' or 'icd' string
+    codeType = ''  // Expects 'cpt' or 'icd' string, default to empty string
 }) => {
-  const [code, setCode] = useState('');
-  const [description, setDescription] = useState('');
-
-  // Clear form state when the modal is closed or the type changes
-  useEffect(() => {
-    if (!isOpen) {
-      setCode('');
-      setDescription('');
-    }
-  }, [isOpen]); // Rerun only when isOpen changes
-
-  // Handler for the 'Add Code' button click
-  const handleAdd = () => {
-    // Validate essential props
-    if (!codeType || !code.trim()) {
-      console.warn("AddCodeModal: Cannot add code - codeType or code value is missing.");
-      return;
-    }
-
-    // Prepare the object with code details
-    const codeInfo = {
-      id: `${codeType.toLowerCase()}-manual-${Date.now()}`,
-      code: code.trim().toUpperCase(),
-      description: description.trim() || `Manually Added ${codeType.toUpperCase()}`,
-      isManual: true,
-      unit: 1,
-      modifiers: '',
-    };
-
-    try {
-      // Call the callback passed from the parent component
-      onAddCode(codeInfo, codeType.toLowerCase());
-      onClose(); // Close the modal after successful submission
-    } catch (error) {
-      console.error("Error adding code:", error);
-    }
+  const handleSave = (codeData) => {
+    onAddCode(codeData, codeType);
+    onClose();
   };
 
-  // --- Prepare display strings safely ---
-  const modalTitle = `Add Manual ${codeType ? codeType.toUpperCase() : 'Code'}`;
-  const codeInputLabel = `${codeType ? codeType.toUpperCase() : 'Code'} Code`;
-  const codeInputPlaceholder = `Enter ${codeType ? codeType.toUpperCase() : ''} code`;
+  // Only render if we have a valid codeType
+  if (!codeType) return null;
 
-  // --- Conditional Rendering ---
-  // Don't render the modal DOM unless it's requested to be open
-  if (!isOpen) {
-     return null;
-  }
-
-  // --- JSX ---
   return (
-    <BaseModal
-        isOpen={isOpen}
-        onClose={onClose}
-        title={modalTitle}
-        size="medium"
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Add ${codeType.toUpperCase()} Code`}
+      className={styles.addCodeModal}
     >
-        {/* Form Content */}
-        <div className={styles.formContent}>
-            <Input
-                // Use a predictable ID structure if needed for external labels or testing
-                id={`add-code-input-${codeType || 'unknown'}`}
-                label={codeInputLabel}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder={codeInputPlaceholder}
-                autoFocus // Automatically focus the code input when modal opens
-                className={styles.inputField}
-                // Add other relevant input attributes if needed (e.g., maxLength)
-            />
-            <Input
-                id={`add-description-input-${codeType || 'unknown'}`}
-                label="Description (Optional)"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter code description"
-                className={styles.inputField}
-            />
-            {/* Placeholder for potential future enhancements like linking */}
-        </div>
-
-         {/* Modal Footer */}
-         <div className={styles.modalFooter}>
-             <Button variant="light" onClick={onClose}>Cancel</Button>
-             <Button
-                variant="primary"
-                onClick={handleAdd}
-                // Disable button if code is empty OR if codeType is missing (belt-and-suspenders)
-                disabled={!code.trim() || !codeType}
-             >
-                 Add Code
-             </Button>
-         </div>
-    </BaseModal>
+      {codeType === 'icd' ? (
+        <IcdCodeInput onSave={handleSave} onCancel={onClose} />
+      ) : (
+        <div>CPT code input form will go here</div>
+      )}
+    </Modal>
   );
 };
 

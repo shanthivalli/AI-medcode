@@ -3,23 +3,142 @@
 @use '../../../styles/mixins' as *;
 
 .button {
-  @include button-reset; display: inline-flex; align-items: center; justify-content: center; gap: $spacing-sm; border: 1px solid transparent; border-radius: $border-radius-base; font-family: $font-family-sans-serif; font-weight: $font-weight-medium; text-align: center; vertical-align: middle; transition: $transition-color, $transition-shadow, transform 0.1s ease; white-space: nowrap; line-height: 1.2;
-  // &:not(.disabled):active { transform: translateY(1px); } // Removed jump
-  &.disabled { cursor: not-allowed; opacity: 0.6; }
-  @include focus-visible-ring($color-primary);
-  &.small { padding: $spacing-xs $spacing-sm; font-size: $font-size-sm; border-radius: $border-radius-sm; gap: $spacing-xs; }
-  &.medium { padding: $spacing-sm $spacing-lg; font-size: $font-size-base; }
-  &.large { padding: $spacing-md $spacing-xl; font-size: $font-size-lg; }
-  @mixin button-variant($bg, $border, $color, $hover-bg, $hover-border) { background-color: $bg; border-color: $border; color: $color; &:hover:not(.disabled) { background-color: $hover-bg; border-color: $hover-border; box-shadow: $shadow-sm; } }
-  @mixin button-outline-variant($color, $hover-bg) { background-color: transparent; border-color: $color; color: $color; &.text { border-color: transparent; &:hover:not(.disabled){ border-color:transparent; } } &:hover:not(.disabled) { background-color: $hover-bg; } }
-  &.primary { @include button-variant($color-primary, $color-primary, $color-white, darken($color-primary, 8%), darken($color-primary, 8%)); }
-  &.secondary { @include button-variant($color-secondary, $color-secondary, $color-white, darken($color-secondary, 8%), darken($color-secondary, 8%)); }
-  &.success { @include button-variant($color-success, $color-success, $color-white, darken($color-success, 8%), darken($color-success, 8%)); }
-  &.danger { @include button-variant($color-danger, $color-danger, $color-white, darken($color-danger, 8%), darken($color-danger, 8%)); }
-  &.warning { @include button-variant($color-warning, $color-warning, $color-text-primary, darken($color-warning, 8%), darken($color-warning, 8%)); }
-  &.info { @include button-variant($color-info, $color-info, $color-white, darken($color-info, 8%), darken($color-info, 8%)); }
-  &.light { @include button-variant($color-light, $color-border, $color-text-primary, darken($color-light, 5%), $color-border); }
-  &.text { @include button-outline-variant($color-primary, rgba($color-primary, 0.08)); &.secondary { @include button-outline-variant($color-secondary, rgba($color-secondary, 0.08));} &.danger { @include button-outline-variant($color-danger, rgba($color-danger, 0.08)); } padding-left: $spacing-sm; padding-right: $spacing-sm; }
-  &.iconOnly { padding: $spacing-sm; min-width: auto; border-radius: 50%; &.small { padding: $spacing-xs; } &.large { padding: $spacing-md; } .iconLeft, .iconRight, .icon { margin: 0; font-size: 1.2em; } span { display: none; } }
-  .iconLeft { margin-right: $spacing-sm; } .iconRight { margin-left: $spacing-sm; }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid transparent;
+  border-radius: $border-radius-lg;
+  font-family: $font-family-sans-serif;
+  font-weight: $font-weight-medium;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+  background-color: transparent;
+  color: $color-text-primary;
+  font-size: $font-size-base;
+  line-height: 1.5;
+  gap: $spacing-sm;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Icon alignment
+  svg {
+    width: 1.25em;
+    height: 1.25em;
+  }
+}
+
+// Button variants
+.primary {
+  background-color: $color-primary;
+  border-color: $color-primary;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-primary, 10%);
+    border-color: darken($color-primary, 10%);
+  }
+}
+
+.secondary {
+  background-color: $color-secondary;
+  border-color: $color-secondary;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-secondary, 10%);
+    border-color: darken($color-secondary, 10%);
+  }
+}
+
+.success {
+  background-color: $color-success;
+  border-color: $color-success;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-success, 10%);
+    border-color: darken($color-success, 10%);
+  }
+}
+
+.warning {
+  background-color: $color-warning;
+  border-color: $color-warning;
+  color: $color-dark;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-warning, 10%);
+    border-color: darken($color-warning, 10%);
+  }
+}
+
+.danger {
+  background-color: $color-danger;
+  border-color: $color-danger;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-danger, 10%);
+    border-color: darken($color-danger, 10%);
+  }
+}
+
+.light {
+  background-color: $color-light;
+  border-color: $color-border;
+  color: $color-text-primary;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-light, 5%);
+  }
+}
+
+.text {
+  border-color: transparent;
+  padding: $spacing-xs;
+
+  &:hover:not(:disabled) {
+    background-color: $color-background-hover;
+  }
+}
+
+// Button sizes
+.small {
+  padding: $spacing-xs $spacing-sm;
+  font-size: $font-size-sm;
+}
+
+.large {
+  padding: $spacing-md $spacing-lg;
+  font-size: $font-size-lg;
+}
+
+// Icon-only buttons
+.iconOnly {
+  padding: $spacing-xs;
+  width: 2.5em;
+  height: 2.5em;
+
+  &.small {
+    width: 2em;
+    height: 2em;
+  }
+
+  &.large {
+    width: 3em;
+    height: 3em;
+  }
 }
