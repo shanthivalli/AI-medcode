@@ -9,6 +9,7 @@ import AddCodeModal from '../Modals/AddCodeModal';
 import Button from '../Common/Button/Button';
 import Icon from '../Common/Icon/Icon';
 import Tooltip from '../Common/Tooltip/Tooltip';
+import RationalePanel from '../Panels/RationalePanel';
 import styles from './CodingModule.module.scss';
 
 // Mock data function - ensure this simulates async behavior
@@ -56,6 +57,10 @@ function CodingModule() {
   const [analysisVisible, setAnalysisVisible] = useState(false);
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
   const [existingCodes, setExistingCodes] = useState([]);
+  const [rationalePanelState, setRationalePanelState] = useState({
+    isOpen: false,
+    rationale: '',
+  });
 
   // --- Callbacks ---
   // --- FIX: Verify handleGenerate Logic ---
@@ -188,6 +193,27 @@ function CodingModule() {
     setAnalysisVisible(true);
   };
 
+  const openRationalePanel = useCallback(() => {
+    setRationalePanelState(prev => ({
+      ...prev,
+      isOpen: true
+    }));
+  }, []);
+
+  const closeRationalePanel = useCallback(() => {
+    setRationalePanelState(prev => ({
+      ...prev,
+      isOpen: false
+    }));
+  }, []);
+
+  const handleSaveRationale = useCallback((newRationale) => {
+    setRationalePanelState(prev => ({
+      ...prev,
+      rationale: newRationale
+    }));
+  }, []);
+
   // --- Memos / Derived State ---
   const displayedCptCodes = useMemo(() => allCptCodes.filter(c => !removedCodeIds.has(c.id)), [allCptCodes, removedCodeIds]);
   const displayedIcdCodes = useMemo(() => allIcdCodes.filter(c => !removedCodeIds.has(c.id)), [allIcdCodes, removedCodeIds]);
@@ -210,6 +236,16 @@ function CodingModule() {
        )}
        {/* Top Right Action Buttons */}
        <div className={styles.topRightActions}> 
+         {/* Rationale Button */}
+         <Button
+           variant="light"
+           size="medium"
+           iconLeft="file-text"
+           onClick={openRationalePanel}
+           className={styles.rationaleButton}
+         >
+           Rationale
+         </Button>
          {/* Alert Button */}
          <button
            className={styles.alertButton}
@@ -268,6 +304,14 @@ function CodingModule() {
       <DetailsPanel isOpen={detailsPanelState.isOpen} onClose={closeDetailsPanel} content={detailsPanelState.content} />
       <AlertPanel isOpen={alertPanelOpen} onClose={toggleAlertPanel} alerts={alerts} />
       <AddCodeModal isOpen={addCodeModalState.isOpen} onClose={closeAddCodeModal} onAddCode={handleAddManualCode} codeType={addCodeModalState.type} />
+      <RationalePanel
+        isOpen={rationalePanelState.isOpen}
+        onClose={closeRationalePanel}
+        rationale={rationalePanelState.rationale}
+        onSaveRationale={handleSaveRationale}
+        cptCodes={displayedCptCodes}
+        icdCodes={displayedIcdCodes}
+      />
     </div>
   );
 }

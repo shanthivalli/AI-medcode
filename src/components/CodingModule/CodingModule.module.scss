@@ -188,3 +188,48 @@
    .sliderToggleButton { top: $spacing-lg; left: $spacing-lg; transform: none; }
    .topRightActions { top: $spacing-lg; right: $spacing-lg; button span { display: none; } button { min-width: 40px; padding: $spacing-sm;} }
 }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-bottom: 1px solid $color-border;
+  background-color: $color-background;
+}
+
+.rationaleButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-base;
+  background-color: $color-white;
+  color: $color-text-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  transition: all 0.2s ease;
+  height: 40px;
+
+  &:hover {
+    background-color: $color-background-hover;
+    border-color: darken($color-border, 5%);
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: $color-text-secondary;
+  }
+
+  @include media-breakpoint-down($breakpoint-md) {
+    span {
+      display: none;
+    }
+    padding: $spacing-sm;
+    min-width: 40px;
+  }
+}

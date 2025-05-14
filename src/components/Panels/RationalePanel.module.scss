@@ -1,0 +1,165 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba($color-dark, 0.3);
+  z-index: $z-index-overlay;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 500px;
+  background-color: $color-white;
+  box-shadow: $shadow-lg;
+  z-index: $z-index-panel;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+
+  &.isOpen {
+    transform: translateX(0);
+  }
+}
+
+.header {
+  padding: $spacing-md;
+  border-bottom: 1px solid $color-border;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: $color-background;
+
+  h2 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+}
+
+.headerActions {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-md;
+  @include subtle-scrollbar();
+}
+
+.overallRationale {
+  margin-bottom: $spacing-xl;
+
+  h3 {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.rationaleInput {
+  width: 100%;
+  padding: $spacing-sm;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  font-family: inherit;
+  font-size: $font-size-base;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 120px;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.1);
+  }
+}
+
+.rationaleText {
+  font-size: $font-size-base;
+  line-height: 1.6;
+  color: $color-text-primary;
+  white-space: pre-wrap;
+}
+
+.codeSection {
+  margin-bottom: $spacing-xl;
+
+  h3 {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin-bottom: $spacing-sm;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.codeItem {
+  padding: $spacing-sm;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  margin-bottom: $spacing-sm;
+  background-color: $color-background;
+
+  .code {
+    font-weight: $font-weight-medium;
+    color: $color-primary;
+    margin-right: $spacing-sm;
+  }
+
+  .description {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    display: block;
+    margin-top: $spacing-xs;
+  }
+}
+
+.codeRationale {
+  margin: $spacing-sm 0 0;
+  padding-top: $spacing-sm;
+  border-top: 1px dashed $color-border;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+
+  svg {
+    margin-top: 3px;
+    flex-shrink: 0;
+    color: $color-info;
+  }
+}
+
+.footer {
+  padding: $spacing-md;
+  border-top: 1px solid $color-border;
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  background-color: $color-background;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+} 
