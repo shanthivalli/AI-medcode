@@ -40,7 +40,7 @@
         color: lighten(#000000, 30%); 
         background-color: $color-background-hover; 
     } 
-    @include focus-visible-ring($color-primary, 1px);
+    @include focus-ring();
     
     // Hide when EMR is expanded
     .sliderPanel.isEmrExpanded & { 
@@ -73,7 +73,7 @@
         color: $color-text-primary; 
         background-color: $color-background-hover; 
     } 
-    @include focus-visible-ring($color-primary, 1px);
+    @include focus-ring();
     
     // Show when EMR is expanded
     .sliderPanel.isEmrExpanded & { 

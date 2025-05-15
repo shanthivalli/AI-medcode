@@ -10,7 +10,7 @@
 
 // Base input styling using the mixin
 .input {
-  @include modern-input-style;
+  @include input-underline();
   display: block;
   width: 100%;
   font-size: $font-size-base;

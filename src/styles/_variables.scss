@@ -1,6 +1,6 @@
-// /src/styles/_variables.scss
+/* /src/styles/_variables.scss */
 
-// --- Colors (Clinical & Modern Palette) ---
+/* --- Colors (Clinical & Modern Palette) --- */
 $color-primary: #0066cc;
 $color-secondary: #6c757d;
 $color-success: #28a745;
@@ -8,7 +8,7 @@ $color-danger: #dc3545;
 $color-warning: #ffc107;
 $color-info: #17a2b8;
 $color-light: #f8f9fa;
-$color-subtle-card-bg: #FBFCFC; // Very subtle grey for card background
+$color-subtle-card-bg: #FBFCFC; /* Very subtle grey for card background */
 $color-dark: #343a40;
 $color-white: #ffffff;
 
@@ -25,47 +25,48 @@ $color-code: $color-primary;
 $color-link-icon: $color-secondary;
 $color-link-icon-active: $color-primary;
 
-// --- Typography (Using Inter) ---
+/* --- Typography (Using Inter) --- */
 $font-family-sans-serif: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 $font-size-xs: 0.75rem;
 $font-size-sm: 0.875rem;
 $font-size-base: 1rem;
 $font-size-lg: 1.125rem;
 $font-size-xl: 1.25rem;
-$font-size-xxl: $font-size-base * 1.47; // ~22px
+$font-size-xxl: $font-size-base * 1.47; /* ~22px */
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
 $line-height-base: 1.5;
 
-// --- Spacing Unit (8px grid) ---
-$spacing-unit: 8px;  // Base spacing unit
-$spacing-xs: 4px;    // 0.5x
-$spacing-sm: 8px;    // 1x
-$spacing-md: 16px;   // 2x
-$spacing-lg: 24px;   // 3x
-$spacing-xl: 32px;   // 4x
-$spacing-xxl: 40px;  // 5x
+/* --- Spacing Unit (8px grid) --- */
+$spacing-unit: 8px;  /* Base spacing unit */
+$spacing-xs: 4px;    /* 0.5x */
+$spacing-sm: 8px;    /* 1x */
+$spacing-md: 16px;   /* 2x */
+$spacing-lg: 24px;   /* 3x */
+$spacing-xl: 32px;   /* 4x */
+$spacing-xxl: 40px;  /* 5x */
 
-// --- Borders / Shadows ---
+/* --- Borders / Shadows --- */
 $border-radius-sm: 4px;
-$border-radius-base: 6px;  // Added base border radius
+$border-radius-base: 6px;  /* Added base border radius */
 $border-radius-md: 6px;
 $border-radius-lg: 8px;
+$border-radius-xl: 12px;
 
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 
-// --- Breakpoints ---
+/* --- Breakpoints --- */
 $breakpoint-xs: 0;
 $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
 
-// --- Z-Indexes ---
+/* --- Z-Indexes --- */
 $z-index-dropdown: 1000;
 $z-index-sticky: 1020;
 $z-index-fixed: 1030;
@@ -73,30 +74,30 @@ $z-index-modal-backdrop: 1040;
 $z-index-modal: 1050;
 $z-index-popover: 1060;
 $z-index-tooltip: 1070;
-$z-index-overlay: 1080;  // Added for overlay
-$z-index-panel: 1090;    // Added for panels
+$z-index-overlay: 1080;  /* Added for overlay */
+$z-index-panel: 1090;    /* Added for panels */
 
-// --- Transitions ---
-// Define base timings and properties
+/* --- Transitions --- */
+/* Define base timings and properties */
 $transition-duration-base: 0.2s;
 $transition-timing-function-base: ease-in-out;
 
-// Define specific transitions (Combine properties)
-$transition-base: all $transition-duration-base $transition-timing-function-base; // General purpose
-$transition-color: color $transition-duration-base $transition-timing-function-base, background-color $transition-duration-base $transition-timing-function-base, border-color $transition-duration-base $transition-timing-function-base; // For color changes
-$transition-shadow: box-shadow $transition-duration-base $transition-timing-function-base; // *** ADDED THIS ***
-$transition-transform: transform $transition-duration-base $transition-timing-function-base; // Standard transform
-$transition-transform-smooth: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); // Smoother transform (e.g., panels sliding)
-$transition-opacity: opacity $transition-duration-base $transition-timing-function-base; // For fades
+/* Define specific transitions (Combine properties) */
+$transition-base: all $transition-duration-base $transition-timing-function-base; /* General purpose */
+$transition-color: color $transition-duration-base $transition-timing-function-base, background-color $transition-duration-base $transition-timing-function-base, border-color $transition-duration-base $transition-timing-function-base; /* For color changes */
+$transition-shadow: box-shadow $transition-duration-base $transition-timing-function-base; /* *** ADDED THIS *** */
+$transition-transform: transform $transition-duration-base $transition-timing-function-base; /* Standard transform */
+$transition-transform-smooth: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother transform (e.g., panels sliding) */
+$transition-opacity: opacity $transition-duration-base $transition-timing-function-base; /* For fades */
 
-// --- Layout Widths ---
+/* --- Layout Widths --- */
 $panel-width-cpt: 40%;
 $panel-width-icd: 30%;
 $panel-width-analysis: 30%;
 $panel-width-split: 50%;
 $slider-width: 400px;
-// --- ADDED Expanded Width Variable ---
-$slider-expanded-width-val: 75vw; // Example: 75% of viewport width
-// --- End Expanded Width ---
+/* --- ADDED Expanded Width Variable --- */
+$slider-expanded-width-val: 75vw; /* Example: 75% of viewport width */
+/* --- End Expanded Width --- */
 $details-panel-width: 450px;
 $alert-panel-width: 350px;

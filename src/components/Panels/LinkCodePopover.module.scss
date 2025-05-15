@@ -14,8 +14,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden; // Prevent content spill
-  animation: fadeInScale 0.2s ease-out;
-  transform-origin: top left; // Adjust based on typical anchor position
+   animation: fadeInScale 0.2s ease-out;
+   transform-origin: top left; // Adjust based on typical anchor position
 }
 
 @keyframes fadeInScale {

@@ -92,7 +92,7 @@
     box-shadow: $shadow-md; // Slightly more prominent shadow on hover
   }
 
-   @include focus-visible-ring($color-primary, 2px);
+   @include focus-ring();
 
    &.manual {
        border-left: 3px solid $color-info;
@@ -163,7 +163,7 @@
      &.hasLinks { color: $color-link-icon-active; }
   }
 
-  @include focus-visible-ring($color-primary, 1px);
+  @include focus-ring();
 }
 
 .description {

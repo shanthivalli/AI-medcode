@@ -3,13 +3,13 @@
 @use '../../../styles/mixins' as *;
 
 .tabsContainer { width: 100%; display: flex; flex-direction: column; }
-.tabListWrapper { position: relative; border-bottom: 1px solid $color-border; overflow-x: auto; flex-shrink: 0; @include subtle-scrollbar($track: transparent, $thumb: $color-secondary); }
+.tabListWrapper { position: relative; border-bottom: 1px solid $color-border; overflow-x: auto; flex-shrink: 0; @include subtle-scrollbar(); }
 .tabList { list-style: none; padding: 0; margin: 0; display: flex; position: relative; }
 // .tabItem {}
 .tabButton { @include button-reset; padding: $spacing-md $spacing-lg; font-size: $font-size-base; font-weight: $font-weight-medium; color: $color-text-secondary; cursor: pointer; transition: $transition-color; white-space: nowrap; position: relative; border: none;
   &:hover { color: $color-text-primary; background-color: $color-background-hover; }
   &.active { color: $color-primary; font-weight: $font-weight-semibold; }
-  @include focus-visible-ring($color-primary, 0px);
+  @include focus-ring();
 }
 .tabIndicator { position: absolute; bottom: 0; height: 2px; background-color: $color-primary; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .tabContent { padding: $spacing-lg; flex-grow: 1; overflow-y: auto; @include subtle-scrollbar(); &:focus { outline: none; } }

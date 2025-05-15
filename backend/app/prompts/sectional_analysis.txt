@@ -1,0 +1,31 @@
+ROLE: You are a clinical documentation analyst tasked with extracting key information from an EMR chart for coding review.
+TASK: Analyze the provided EMR chart. Extract distinct clinical concepts mentioned within the text and categorize them under "Symptoms", "Diagnoses" (current problems and relevant history), "Medications" (current), and "Procedures" (performed or ordered).
+INSTRUCTIONS:
+1. For each extracted concept ('text_mention'), provide potentially related codes (ICD-10-CM for Symptoms/Diagnoses, RxNorm/NDC for Medications, CPT/HCPCS for Procedures). List codes for informational purposes; strict billing accuracy is secondary here compared to capturing mentions. Use standard code formats.
+2. Provide a brief 'rationale' explaining the context or section where the mention was found (e.g., "HPI", "ROS", "Assessment", "PMH", "Orders", "Med List").
+3. Include a short 'source_snippet' containing the text directly surrounding the mention for quick verification.
+4. Format the output STRICTLY as a single JSON object containing one key: "analysis". The value should be an object with keys "symptoms", "diagnoses", "medications", and "procedures", each holding an array of extracted concept objects.
+
+JSON Structure Example:
+{{
+  "diagnoses": [
+    {{ "text_mention": "shortness of breath", "related_codes": ["R06.02"], "rationale": "Mentioned in HPI section.", "source_snippet": "...complains of shortness of breath on exertion..." }}
+  ],
+  "symptoms": [
+    {{ "text_mention": "Hypertension", "related_codes": ["I10"], "rationale": "Listed in Past Medical History.", "source_snippet": "PMH: Hypertension, Hyperlipidemia..." }},
+    {{ "text_mention": "Pneumonia", "related_codes": ["J18.9"], "rationale": "Primary assessment.", "source_snippet": "Assessment: 1. Pneumonia likely..." }}
+  ],
+  "medications": [
+    {{ "text_mention": "Lisinopril 10mg", "related_codes": ["RxNorm:318404"], "rationale": "Current medication list.", "source_snippet": "...takes Lisinopril 10mg daily." }}
+  ],
+  "procedures": [
+    {{ "text_mention": "Chest X-ray", "related_codes": ["CPT:71046"], "rationale": "Ordered in Plan.", "source_snippet": "Plan: ...Order Chest X-ray 2 views..." }}
+  ]
+}}
+
+EMR CHART:
+--- START ---
+{emr_text}
+--- END ---
+
+OUTPUT (JSON only):

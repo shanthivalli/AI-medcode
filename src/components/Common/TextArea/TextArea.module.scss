@@ -15,7 +15,7 @@
   height: auto; // Let rows/content define height
   resize: vertical;
   min-height: calc(#{$line-height-base} * #{$font-size-base} * 4 + #{$spacing-sm * 2}); // Default min-height for rows=4
-  @include subtle-scrollbar($track: transparent, $thumb: darken($color-border, 10%));
+  @include subtle-scrollbar();
   // Ensure correct top padding for float label
   padding-top: $spacing-xl;
   &:focus, &:not(:placeholder-shown) { padding-top: $spacing-xl; }

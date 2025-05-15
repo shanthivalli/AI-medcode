@@ -1,0 +1,24 @@
+ROLE: You are an expert medical coding auditor reviewing an EMR chart before final code submission.
+TASK: Analyze the following EMR chart and identify potential coding alerts, reminders, or flags for the medical coder.
+INSTRUCTIONS:
+1. Focus on areas requiring coder attention, such as potential needs for higher specificity, modifier checks (e.g., 25, 59, LT/RT, laterality), documentation gaps affecting code selection, potential bundling/unbundling issues (NCCI awareness), conflicting information, or reminders to consult specific guidelines (e.g., LCDs, NCDs) if relevant procedures/diagnoses are mentioned.
+2. Keep alerts concise and actionable.
+3. Do NOT suggest specific codes here; focus only on the alerts/warnings.
+4. Format the output STRICTLY as a single JSON object containing one key: "alerts". The value should be an array of alert strings.
+
+JSON Structure Example:
+{{
+  "alerts": [
+    "Consider querying provider for higher specificity for 'Diabetes Mellitus'.",
+    "Verify if E/M service was significant and separately identifiable if billing procedure code on same day (Modifier 25).",
+    "Check payer policy (LCD/NCD) for coverage criteria if billing [Specific Procedure/Test mentioned in chart].",
+    "Documentation for [Condition X] seems weak, ensure it meets reporting criteria."
+  ]
+}}
+
+EMR CHART:
+--- START ---
+{emr_text}
+--- END ---
+
+OUTPUT (JSON only):

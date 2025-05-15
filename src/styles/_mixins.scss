@@ -1,155 +1,164 @@
 @use 'variables' as *;
 
-// Resets button styles
+/* Resets button styles */
 @mixin button-reset {
-  padding: 0; border: none; background: none; color: inherit; font: inherit; cursor: pointer; outline: none; appearance: none; text-align: center; vertical-align: middle; user-select: none; text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
 }
 
-// Basic Card Styling (Modern)
+/* Basic Card Styling (Modern) */
 @mixin card-base {
-  background-color: $color-background;
-  border: 1px solid $color-border;
-  border-radius: $border-radius-lg;
+  background-color: $color-white;
+  border-radius: $border-radius-base;
   box-shadow: $shadow-sm;
-  transition: box-shadow 0.2s ease-in-out;
-  overflow: hidden;
+  padding: $spacing-md;
+  transition: $transition-shadow;
 
   &:hover {
     box-shadow: $shadow-md;
   }
 }
 
-// Flexbox centering
-@mixin flex-center($direction: row, $justify: center, $align: center) {
-  display: flex; flex-direction: $direction; align-items: $align; justify-content: $justify;
-}
-
-// Responsive media query helper
-@mixin media-breakpoint-up($breakpoint) {
-  @media (min-width: #{$breakpoint}) {
-    @content;
-  }
-}
-
-@mixin media-breakpoint-down($breakpoint) {
-  @media (max-width: #{$breakpoint - 1px}) {
-    @content;
-  }
-}
-
-@mixin media-breakpoint-between($min, $max) {
-  @media (min-width: #{$min}) and (max-width: #{$max - 1px}) {
-    @content;
-  }
-}
-
-// Focus Visible Styling (Accessibility) - Ring Style
-@mixin focus-visible-ring($color: $color-primary, $width: 2px) {
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 $width rgba($color, 0.4);
-  }
-}
-
-// Modern Input Underline/Border Style (if used)
-@mixin modern-input-style {
-    border: none; border-bottom: 1px solid $color-secondary; border-radius: 0; padding: $spacing-sm 0; background-color: transparent; transition: border-color 0.2s ease-in-out;
-    &:focus { outline: none; border-bottom-color: $color-primary; border-bottom-width: 2px; }
-    &::placeholder { color: $color-text-secondary; opacity: 1; }
-    &:disabled { border-bottom-style: dashed; background-color: transparent; opacity: 0.7; cursor: not-allowed; }
-}
-
-// Subtle Scrollbar
-@mixin subtle-scrollbar($track: $color-light, $thumb: $color-secondary, $thumb-hover: darken($color-secondary, 10%)) {
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: $track;
-    border-radius: 3px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: $thumb;
-    border-radius: 3px;
-    transition: background-color 0.2s ease;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: $thumb-hover;
-  }
-  scrollbar-width: thin;
-  scrollbar-color: $thumb $track;
-}
-
-// Slide-in animation base (used by EncounterSlider)
-@mixin slide-in($direction: 'right', $duration: 0.3s) {
-  transition: transform $duration ease-in-out;
-  @if $direction == 'right' {
-    transform: translateX(100%);
-    &.isOpen {
-      transform: translateX(0);
-    }
-  } @else if $direction == 'left' {
-    transform: translateX(-100%);
-    &.isOpen {
-      transform: translateX(0);
-    }
-  } @else if $direction == 'top' {
-    transform: translateY(-100%);
-    &.isOpen {
-      transform: translateY(0);
-    }
-  } @else if $direction == 'bottom' {
-    transform: translateY(100%);
-    &.isOpen {
-      transform: translateY(0);
-    }
-  }
-}
-
-// Flexbox utilities
+/* Flexbox centering */
 @mixin flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-@mixin flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* Responsive media query helper */
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) { @content; }
+  }
+  @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) { @content; }
+  }
+  @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) { @content; }
+  }
+  @else if $breakpoint == xl {
+    @media (min-width: $breakpoint-xl) { @content; }
+  }
 }
 
-// Typography utilities
+/* Focus Visible Styling (Accessibility) - Ring Style */
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px $color-white, 0 0 0 4px $color-primary;
+  }
+}
+
+/* Modern Input Underline/Border Style (if used) */
+@mixin input-underline {
+  border: none;
+  border-bottom: 2px solid $color-border;
+  padding: $spacing-xs 0;
+  transition: $transition-color;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+/* Subtle Scrollbar */
+@mixin subtle-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($color-dark, 0.2);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+
+    &:hover {
+      background-color: rgba($color-dark, 0.3);
+    }
+  }
+}
+
+/* Slide-in animation base (used by EncounterSlider) */
+@mixin slide-in($direction: 'right', $duration: 0.3s) {
+  @keyframes slideIn#{$direction} {
+    from {
+      transform: translateX(if($direction == 'right', 100%, -100%));
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  animation: slideIn#{$direction} $duration ease-out;
+}
+
+/* Flexbox utilities */
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+/* Typography utilities */
 @mixin text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-@mixin text-wrap {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-// Interactive states
-@mixin interactive {
+/* Interactive states */
+@mixin interactive-states {
+  transition: $transition-base;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
 
   &:hover {
-    opacity: 0.9;
+    opacity: 0.8;
   }
 
   &:active {
-    transform: scale(0.98);
+    opacity: 0.9;
   }
+}
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+@mixin media-breakpoint-down($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: ($breakpoint-sm - 1)) { @content; }
+  } @else if $breakpoint == sm {
+    @media (max-width: ($breakpoint-md - 1)) { @content; }
+  } @else if $breakpoint == md {
+    @media (max-width: ($breakpoint-lg - 1)) { @content; }
+  } @else if $breakpoint == lg {
+    @media (max-width: ($breakpoint-xl - 1)) { @content; }
+  } @else if $breakpoint == xl {
+    @media (max-width: $breakpoint-xl) { @content; }
+  }
+}
+
+@mixin media-breakpoint-up($breakpoint) {
+  @if $breakpoint == xs {
+    @media (min-width: $breakpoint-xs) { @content; }
+  } @else if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) { @content; }
+  } @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) { @content; }
+  } @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) { @content; }
+  } @else if $breakpoint == xl {
+    @media (min-width: $breakpoint-xl) { @content; }
   }
 }

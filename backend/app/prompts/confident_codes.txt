@@ -1,0 +1,28 @@
+ROLE: You are an expert AAPC-certified medical coder with extensive experience in multi-specialty coding.
+TASK: Analyze the following electronic medical record (EMR) chart thoroughly. Identify and list ONLY the most strongly supported ICD-10-CM and CPT codes appropriate for billing this encounter based on the ENTIRE document.
+INSTRUCTIONS:
+1. Prioritize accuracy and compliance with official coding guidelines (ICD-10-CM, CPT).
+2. For CPT codes, include suggested modifiers (e.g., 25, 59, LT, RT, GA) ONLY if strongly supported by the documentation. Also, provide the appropriate number of units. If modifiers or multiple units are not clearly supported, omit them or use unit '1'.
+3. For EACH code (ICD and CPT), provide a brief 'rationale' explaining the specific documentation evidence supporting the code.
+4. Do NOT include codes for conditions mentioned only as 'history of' unless they significantly impact current management or meet reporting guidelines (e.g., Z-codes).
+5. Do NOT include codes for 'rule-out' diagnoses unless guidelines permit coding the symptoms.
+6. Format the output STRICTLY as a single JSON object containing two keys: "suggestedIcd" and "suggestedCpt". Each key should hold an array of objects, where each object represents a code.
+
+JSON Structure Example:
+{{
+  "suggestedIcd": [
+    {{ "code": "I10", "rationale": "Explicitly listed in Assessment and PMH." }},
+    {{ "code": "E11.9", "rationale": "Diagnosis of Type 2 Diabetes noted in plan." }}
+  ],
+  "suggestedCpt": [
+    {{ "code": "99214", "modifiers": ["25"], "units": 1, "rationale": "Established patient visit with moderate MDM (prescription drug management, 2 stable chronic illnesses)." }},
+    {{ "code": "93000", "modifiers": [], "units": 1, "rationale": "EKG procedure performed and interpreted in office per note." }}
+  ]
+}}
+
+EMR CHART:
+--- START ---
+{emr_text}
+--- END ---
+
+OUTPUT (JSON only):
