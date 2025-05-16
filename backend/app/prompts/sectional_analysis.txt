@@ -1,10 +1,11 @@
 ROLE: You are a clinical documentation analyst tasked with extracting key information from an EMR chart for coding review.
-TASK: Analyze the provided EMR chart. Extract distinct clinical concepts mentioned within the text and categorize them under "Symptoms", "Diagnoses" (current problems and relevant history), "Medications" (current), and "Procedures" (performed or ordered).
+TASK: Analyze the provided EMR chart. Extract distinct clinical concepts mentioned within the text and categorize them under "Symptoms", "Diagnoses" (current problems and relevant history), "Medications" (current), and "Procedures" (performed or ordered) limit all the concepts to the first 8 for each be it symptoms, medications, procedures, diagnoses.
 INSTRUCTIONS:
 1. For each extracted concept ('text_mention'), provide potentially related codes (ICD-10-CM for Symptoms/Diagnoses, RxNorm/NDC for Medications, CPT/HCPCS for Procedures). List codes for informational purposes; strict billing accuracy is secondary here compared to capturing mentions. Use standard code formats.
 2. Provide a brief 'rationale' explaining the context or section where the mention was found (e.g., "HPI", "ROS", "Assessment", "PMH", "Orders", "Med List").
 3. Include a short 'source_snippet' containing the text directly surrounding the mention for quick verification.
 4. Format the output STRICTLY as a single JSON object containing one key: "analysis". The value should be an object with keys "symptoms", "diagnoses", "medications", and "procedures", each holding an array of extracted concept objects.
+5. Return ONLY a single, complete, valid JSON object with all brackets and quotes properly closed matching the exact schema provided, with ALL required keys present (even if the value is null or an empty array). Do not include any extra text, explanation, headings, or comments—ONLY valid JSON.
 
 JSON Structure Example:
 {{

@@ -7,6 +7,7 @@ INSTRUCTIONS:
 4. Do NOT include codes for conditions mentioned only as 'history of' unless they significantly impact current management or meet reporting guidelines (e.g., Z-codes).
 5. Do NOT include codes for 'rule-out' diagnoses unless guidelines permit coding the symptoms.
 6. Format the output STRICTLY as a single JSON object containing two keys: "suggestedIcd" and "suggestedCpt". Each key should hold an array of objects, where each object represents a code.
+7. Return ONLY a single, complete, valid JSON object matching the exact schema provided, with ALL required keys present (even if the value is null or an empty array). Do not include any extra text, explanation, headings, or comments—ONLY valid JSON.
 
 JSON Structure Example:
 {{

@@ -12,24 +12,48 @@ import Tooltip from '../Common/Tooltip/Tooltip';
 import RationalePanel from '../Panels/RationalePanel';
 import styles from './CodingModule.module.scss';
 import { api } from '../../services/api';
+import PropTypes from 'prop-types';
 
-function CodingModule() {
+/**
+ * @typedef {Object} ProviderCode
+ * @property {string} code - The code value (e.g., '99213' for CPT, 'J45.909' for ICD)
+ * @property {string[]} [modifiers] - Optional modifiers for CPT codes
+ * @property {string|number} [units] - Optional units for CPT codes
+ * @property {string} [description] - Optional description of the code
+ * @property {string} [rationale] - Optional rationale for the code
+ */
+
+/**
+ * @typedef {Object} EncounterDetails
+ * @property {string} encounterNumber - Unique identifier for the encounter
+ * @property {string} accountNumber - Patient's account number
+ * @property {string} insurance - Insurance information
+ * @property {string} provider - Provider name
+ * @property {string} status - Encounter status
+ * @property {string} dateOfService - Date of service
+ * @property {string} chartText - The medical chart text
+ */
+
+/**
+ * @typedef {Object} CodingModuleProps
+ * @property {EncounterDetails} encounterDetails - Details of the current encounter
+ * @property {ProviderCode[]} providerCptCodes - List of provider's CPT codes
+ * @property {ProviderCode[]} providerIcdCodes - List of provider's ICD codes
+ * @property {Function} [onSubmit] - Callback when codes are submitted
+ * @property {Function} [onSubmitWithFlag] - Callback when codes are submitted with flag
+ */
+
+function CodingModule({ 
+  encounterDetails = {},
+  providerCptCodes = [],
+  providerIcdCodes = [],
+  onSubmit,
+  onSubmitWithFlag
+}) {
   // --- State ---
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isEmrExpanded, setIsEmrExpanded] = useState(false);
-  const [encounterData] = useState({ /* ... initial ... */ });
-  const [chartText, setChartText] = useState('Patient presents complaining of cough...');
-  // Set provider codes only once on load (dummy data for demo)
-  const [providerCptCodes] = useState([
-    { code: '99213', modifiers: ['25'], units: 2 },
-    { code: '93000', modifiers: [], units: 1 },
-    { code: '99214', modifiers: ['59'], units: 1 }
-  ]);
-  const [providerIcdCodes] = useState([
-    { code: 'J45.909' },
-    { code: 'A01.1' },
-    { code: 'B02.2' }
-  ]);
+  const [chartText, setChartText] = useState('');
   const [allCptCodes, setAllCptCodes] = useState([]);
   const [allIcdCodes, setAllIcdCodes] = useState([]);
   const [removedCodeIds, setRemovedCodeIds] = useState(new Set());
@@ -38,7 +62,8 @@ function CodingModule() {
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState({
     suggestions: false,
-    analysis: false
+    analysis: false,
+    submit: false
   });
   const [detailsPanelState, setDetailsPanelState] = useState({ isOpen: false, content: null });
   const [alertPanelOpen, setAlertPanelOpen] = useState(false);
@@ -51,21 +76,41 @@ function CodingModule() {
     rationale: '',
   });
 
+  // Update chartText when encounterDetails changes, but only if it's not empty
+  useEffect(() => {
+    if (encounterDetails?.chartText && !chartText) {
+      setChartText(encounterDetails.chartText);
+    }
+  }, [encounterDetails, chartText]);
+
   // --- Memos / Derived State ---
   const displayedCptCodes = useMemo(() => allCptCodes.filter(c => !removedCodeIds.has(c.id)), [allCptCodes, removedCodeIds]);
   const displayedIcdCodes = useMemo(() => allIcdCodes.filter(c => !removedCodeIds.has(c.id)), [allIcdCodes, removedCodeIds]);
 
   // --- Callbacks ---
+  const openSlider = useCallback(() => {
+    setIsSliderOpen(true);
+    setIsEmrExpanded(false);
+  }, []);
+
+  const closeSlider = useCallback(() => {
+    setIsSliderOpen(false);
+    setIsEmrExpanded(false);
+  }, []);
+
+  const toggleAlertPanel = useCallback(() => {
+    setAlertPanelOpen(prev => !prev);
+  }, []);
+
   const handleGenerate = useCallback(async () => {
     if (!chartText || !chartText.trim()) {
-      alert("Please paste chart text before generating suggestions.");
+      setAlerts(['Please paste chart text before generating suggestions.']);
       return;
     }
 
-    setIsLoading({ suggestions: true, analysis: true });
+    setIsLoading({ suggestions: true, analysis: false });
     setAllCptCodes([]); 
     setAllIcdCodes([]); 
-    setAnalysisData({}); 
     setAlerts([]);
     setRemovedCodeIds(new Set()); 
     setCodeLinks({});
@@ -74,18 +119,55 @@ function CodingModule() {
       const results = await api.getSuggestions(chartText);
       setAllCptCodes(results.cptCodes || []);
       setAllIcdCodes(results.icdCodes || []);
-      setAnalysisData(results.analysisData || {});
-      setAlerts(results.alerts || []);
+      setAlerts((results.alerts || []).map(alert => 
+        typeof alert === 'object' ? alert.message || 'Unknown alert' : alert
+      ));
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setAlerts(['Error generating suggestions. Please try again.']);
       setAllCptCodes([]); 
       setAllIcdCodes([]); 
-      setAnalysisData({});
     } finally {
       setIsLoading({ suggestions: false, analysis: false });
     }
   }, [chartText]);
+
+  const handleSubmit = async (isFlagged = false) => {
+    try {
+      setIsLoading({ ...isLoading, submit: true });
+      
+      // Get all selected codes
+      const selectedCodes = {
+        cptCodes: displayedCptCodes.map(code => ({
+          code: code.code,
+          description: code.description,
+          unit: code.units,
+          modifiers: code.modifiers,
+          rationale: code.rationale
+        })),
+        icdCodes: displayedIcdCodes.map(code => ({
+          code: code.code,
+          description: code.description,
+          rationale: code.rationale
+        }))
+      };
+
+      // Send codes to base app with flag if needed
+      await api.updateEncounterCodes(encounterDetails.encounterId, {
+        ...selectedCodes,
+        isFlagged // Add the flag to indicate this is a flagged submission
+      });
+
+      // Set success alert as a string message
+      setAlerts([`Codes successfully submitted to the base application${isFlagged ? ' with flag' : ''}`]);
+    } catch (error) {
+      console.error('Error submitting codes:', error);
+      // Set error alert as a string message
+      setAlerts(['Failed to submit codes. Please try again.']);
+    } finally {
+      setIsLoading({ ...isLoading, submit: false });
+    }
+  };
 
   const handleRemoveCode = useCallback((type, codeId) => {
     setRemovedCodeIds(prev => new Set([...prev, codeId]));
@@ -146,30 +228,6 @@ function CodingModule() {
     }));
   }, []);
 
-  const handleSubmit = useCallback(() => {
-    // Implementation of submit logic
-    console.log('Submitting codes:', {
-      cptCodes: displayedCptCodes,
-      icdCodes: displayedIcdCodes,
-      removedCodeIds: Array.from(removedCodeIds),
-      codeLinks,
-      chartText,
-      encounterData
-    });
-  }, [displayedCptCodes, displayedIcdCodes, removedCodeIds, codeLinks, chartText, encounterData]);
-
-  const openSlider = useCallback(() => {
-    setIsSliderOpen(true);
-    setIsEmrExpanded(false);
-  }, []);
-
-  const closeSlider = useCallback(() => {
-    setIsSliderOpen(false);
-    setIsEmrExpanded(false);
-  }, []);
-
-  const toggleAlertPanel = useCallback(() => setAlertPanelOpen(prev => !prev), []);
-
   const showDetailsPanel = useCallback((codeData, type) => {
     setDetailsPanelState({ isOpen: true, content: { ...codeData, codeType: type } });
   }, []);
@@ -185,11 +243,6 @@ function CodingModule() {
   const closeAddCodeModal = useCallback(() => {
     setAddCodeModalState({ isOpen: false, type: null });
   }, []);
-
-  const toggleEmrExpanded = useCallback(() => {
-    setIsEmrExpanded(prev => !prev);
-    if (!isSliderOpen) setIsSliderOpen(true);
-  }, [isSliderOpen]);
 
   const handleShowAnalysis = useCallback(async () => {
     setIsLoadingAnalysis(true);
@@ -277,8 +330,8 @@ function CodingModule() {
           variant="success" 
           size="medium" 
           iconLeft="send" 
-          onClick={handleSubmit} 
-          disabled={isLoading.suggestions}
+          onClick={() => handleSubmit(false)} 
+          disabled={isLoading.submit || displayedCptCodes.length === 0 && displayedIcdCodes.length === 0}
         > 
           Submit 
         </Button>
@@ -286,8 +339,8 @@ function CodingModule() {
           variant="warning" 
           size="medium" 
           iconLeft="flag" 
-          onClick={handleSubmit} 
-          disabled={isLoading.suggestions}
+          onClick={() => handleSubmit(true)} 
+          disabled={isLoading.submit || displayedCptCodes.length === 0 && displayedIcdCodes.length === 0}
         > 
           Submit with Flag 
         </Button>
@@ -298,14 +351,15 @@ function CodingModule() {
           isOpen={isSliderOpen}
           isEmrExpanded={isEmrExpanded}
           onClose={closeSlider}
-          onToggleEmrExpanded={toggleEmrExpanded}
-          encounter={encounterData}
+          onToggleEmrExpanded={() => setIsEmrExpanded(prev => !prev)}
+          encounter={encounterDetails}
           providerCptCodes={providerCptCodes}
           providerIcdCodes={providerIcdCodes}
           chartText={chartText}
           onChartTextChange={setChartText}
           onGenerate={handleGenerate}
           isLoading={isLoading.suggestions}
+          hasBaseAppChartText={Boolean(encounterDetails?.chartText)}
         />
       )}
 
@@ -381,5 +435,31 @@ function CodingModule() {
     </div>
   );
 }
+
+CodingModule.propTypes = {
+  encounterDetails: PropTypes.shape({
+    encounterNumber: PropTypes.string,
+    accountNumber: PropTypes.string,
+    insurance: PropTypes.string,
+    provider: PropTypes.string,
+    status: PropTypes.string,
+    dateOfService: PropTypes.string,
+    chartText: PropTypes.string
+  }),
+  providerCptCodes: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    modifiers: PropTypes.arrayOf(PropTypes.string),
+    units: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    description: PropTypes.string,
+    rationale: PropTypes.string
+  })),
+  providerIcdCodes: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    rationale: PropTypes.string
+  })),
+  onSubmit: PropTypes.func,
+  onSubmitWithFlag: PropTypes.func
+};
 
 export default CodingModule;

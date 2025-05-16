@@ -1,4 +1,5 @@
 const API_BASE_URL = 'http://localhost:5000/api';
+const BASE_APP_API_URL = process.env.REACT_APP_BASE_APP_API_URL || 'http://localhost:3000/api/base-app';
 
 export const api = {
     // Get AI suggestions for CPT and ICD codes
@@ -60,6 +61,28 @@ export const api = {
         });
         if (!response.ok) {
             throw new Error('Failed to get rationale');
+        }
+        return response.json();
+    },
+
+    // Send updated codes to base app
+    updateEncounterCodes: async (encounterId, codes) => {
+        const response = await fetch(`${BASE_APP_API_URL}/encounter/update`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                encounterId,
+                codes: {
+                    cptCodes: codes.cptCodes,
+                    icdCodes: codes.icdCodes
+                },
+                isFlagged: codes.isFlagged || false
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update encounter codes');
         }
         return response.json();
     },

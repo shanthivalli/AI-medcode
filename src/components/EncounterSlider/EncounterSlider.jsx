@@ -7,10 +7,49 @@ import Chip from '../Common/Chip/Chip';
 import Tooltip from '../Common/Tooltip/Tooltip';
 import FlexibleTextArea from '../Common/FlexibleTextArea/FlexibleTextArea';
 import styles from './EncounterSlider.module.scss';
+import PropTypes from 'prop-types';
+
+/**
+ * @typedef {Object} ProviderCode
+ * @property {string} code - The code value (e.g., '99213' for CPT, 'J45.909' for ICD)
+ * @property {string[]} [modifiers] - Optional modifiers for CPT codes
+ * @property {string|number} [units] - Optional units for CPT codes
+ * @property {string} [description] - Optional description of the code
+ * @property {string} [rationale] - Optional rationale for the code
+ */
+
+/**
+ * @typedef {Object} EncounterDetails
+ * @property {string} encounterNumber - Unique identifier for the encounter
+ * @property {string} accountNumber - Patient's account number
+ * @property {string} insurance - Insurance information
+ * @property {string} provider - Provider name
+ * @property {string} status - Encounter status
+ * @property {string} dateOfService - Date of service
+ * @property {string} chartText - The medical chart text
+ */
+
+/**
+ * @typedef {Object} EncounterSliderProps
+ * @property {boolean} isOpen - Whether the slider is open
+ * @property {boolean} isEmrExpanded - Whether the EMR section is expanded
+ * @property {Function} onClose - Callback when slider is closed
+ * @property {Function} onToggleEmrExpanded - Callback to toggle EMR expansion
+ * @property {EncounterDetails} encounter - Details of the current encounter
+ * @property {ProviderCode[]} providerCptCodes - List of provider's CPT codes
+ * @property {ProviderCode[]} providerIcdCodes - List of provider's ICD codes
+ * @property {string} chartText - The medical chart text
+ * @property {Function} onChartTextChange - Callback when chart text changes
+ * @property {Function} onGenerate - Callback when generate button is clicked
+ * @property {boolean} isLoading - Whether suggestions are being generated
+ * @property {boolean} hasBaseAppChartText - Whether the chart text is coming from the base app
+ */
 
 const EncounterSlider = ({
   isOpen,
+  isEmrExpanded,
   onClose,
+  onToggleEmrExpanded,
   encounter = {},
   providerCptCodes = [],
   providerIcdCodes = [],
@@ -18,10 +57,10 @@ const EncounterSlider = ({
   onChartTextChange,
   onGenerate,
   isLoading,
+  hasBaseAppChartText
 }) => {
   const sliderRef = useRef(null);
   const textAreaRef = useRef(null);
-  const [isEmrExpanded, setIsEmrExpanded] = useState(false);
   const [detailsExpanded, setDetailsExpanded] = useState(true);
   const [providerExpanded, setProviderExpanded] = useState(true);
 
@@ -41,7 +80,7 @@ const EncounterSlider = ({
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         if (isEmrExpanded) {
-          setIsEmrExpanded(false);
+          onToggleEmrExpanded();
         } else if (isOpen) {
           onClose();
         }
@@ -54,42 +93,28 @@ const EncounterSlider = ({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, isEmrExpanded, onClose]);
+  }, [isOpen, isEmrExpanded, onClose, onToggleEmrExpanded]);
 
   // Internal toggle function
   const toggleEmrExpanded = useCallback((e) => {
     if (e) e.stopPropagation();
-    setIsEmrExpanded(prev => !prev);
-  }, []);
+    onToggleEmrExpanded();
+  }, [onToggleEmrExpanded]);
 
-  const { encounterNumber = 'N/A', accountNumber = 'N/A', provider = 'N/A', status = 'N/A', insurance = 'N/A', dateOfService = 'N/A' } = encounter;
+  // Safely destructure encounter properties with defaults
+  const {
+    encounterNumber = 'N/A',
+    accountNumber = 'N/A',
+    provider = 'N/A',
+    status = 'N/A',
+    insurance = 'N/A',
+    dateOfService = 'N/A'
+  } = encounter || {};
+
+  if (!isOpen) { return null; }
+
+  const isGenerateDisabled = isLoading || !chartText || !chartText.trim();
   const hasProviderCodes = providerCptCodes.length > 0 || providerIcdCodes.length > 0;
-
-   if (!isOpen) { return null; }
-
-   const isGenerateDisabled = isLoading || !chartText || !chartText.trim();
-
-  // DUMMY DATA FOR DEMO (remove in production)
-  const demoIcdCodes = [
-    ...providerIcdCodes,
-    { code: 'A01.1' },
-    { code: 'B02.2' },
-    { code: 'C03.3' },
-    { code: 'D04.4' },
-    { code: 'E05.5' }
-  ];
-  const demoCptCodes = [
-    ...providerCptCodes,
-    { code: '99213', modifiers: ['25'], units: 2 },
-    { code: '93000', modifiers: [], units: 1 },
-    { code: '99214', modifiers: ['59'], units: 1 },
-    { code: '99215', modifiers: ['25', '59'], units: 3 },
-    { code: '99354', modifiers: [], units: 1 }
-  ];
-
-  // Only show first 3 ICD and CPT codes
-  const visibleIcdCodes = demoIcdCodes.slice(0, 3);
-  const visibleCptCodes = demoCptCodes.slice(0, 3);
 
   return (
     <>
@@ -164,9 +189,9 @@ const EncounterSlider = ({
             )}
           </section>
 
-          {/* Provider Codes Section - Gets collapsed class when EMR is expanded */}
+          {/* Provider Codes Section */}
           <section className={`${styles.section} ${styles.providerSection} ${isEmrExpanded ? styles.isCollapsed : ''}`}>
-            <div className={styles.sectionHeaderRow} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className={styles.sectionHeaderRow}>
               <h3 className={styles.sectionTitle}><Icon name="medical"/> Provider Coded</h3>
               <Button
                 variant="text"
@@ -175,7 +200,6 @@ const EncounterSlider = ({
                 onClick={() => setProviderExpanded(e => !e)}
                 aria-label={providerExpanded ? 'Collapse Provider Codes' : 'Expand Provider Codes'}
                 className={styles.sectionToggleButton}
-                style={{ marginLeft: 'auto' }}
               >
                 <Icon name={providerExpanded ? 'chevron-up' : 'chevron-down'} size="1.2em" />
               </Button>
@@ -184,17 +208,17 @@ const EncounterSlider = ({
               <p className={styles.emptyMessage}>No codes entered by provider.</p>
             ) : (
               <div className={styles.providerCodeLists}>
-                {visibleIcdCodes.length > 0 && (
+                {providerIcdCodes.length > 0 && (
                   <div>
                     <h4 className={styles.codeListTitle}>ICD Codes</h4>
                     <ul className={styles.providerCodeScrollable}>
-                      {visibleIcdCodes.map((code, idx) => (
-                        <li key={code.id || code.code || idx}>{code.code || code}</li>
+                      {providerIcdCodes.map((code, idx) => (
+                        <li key={code.id || code.code || idx}>{code.code}</li>
                       ))}
                     </ul>
                   </div>
                 )}
-                {visibleCptCodes.length > 0 && (
+                {providerCptCodes.length > 0 && (
                   <div>
                     <h4 className={styles.codeListTitle}>CPT Codes</h4>
                     <div className={styles.providerCodeScrollable}>
@@ -207,12 +231,12 @@ const EncounterSlider = ({
                           </tr>
                         </thead>
                         <tbody>
-                          {visibleCptCodes.map((code, idx) => {
+                          {providerCptCodes.map((code, idx) => {
                             const modifiers = code.modifiers && code.modifiers.length > 0 ? code.modifiers.join(', ') : '-';
                             const units = code.units || code.unit;
                             return (
                               <tr key={code.id || code.code || idx}>
-                                <td style={{ padding: '4px', border: '1px solid #ccc' }}>{code.code || code}</td>
+                                <td style={{ padding: '4px', border: '1px solid #ccc' }}>{code.code}</td>
                                 <td style={{ padding: '4px', border: '1px solid #ccc' }}>{modifiers !== '' ? modifiers : '-'}</td>
                                 <td style={{ padding: '4px', border: '1px solid #ccc' }}>{units && units !== 1 ? units : '-'}</td>
                               </tr>
@@ -229,10 +253,11 @@ const EncounterSlider = ({
 
           {/* EMR Chart Section */}
           <section className={`${styles.section} ${styles.emrSection} ${isEmrExpanded ? styles.emrSectionExpanded : ''}`}>
-            {/* EMR Header only contains expand button */}
             <div className={styles.emrHeader}>
-              <h3 className={styles.sectionTitle}><Icon name="clipboard"/> EMR Chart</h3>
-              {/* Enter Expanded View Button */}
+              <h3 className={styles.sectionTitle}>
+                <Icon name="clipboard"/> 
+                {hasBaseAppChartText ? 'EMR Chart' : 'Paste Chart Text'}
+              </h3>
               {!isEmrExpanded && (
                 <Button 
                   variant="text" 
@@ -246,7 +271,6 @@ const EncounterSlider = ({
                 </Button>
               )}
             </div>
-            {/* Wrapper contains the textarea */}
             <div className={styles.textAreaWrapper}>
               {!isEmrExpanded ? (
                 <FlexibleTextArea
@@ -255,6 +279,8 @@ const EncounterSlider = ({
                   onChange={e => onChartTextChange(e.target.value)}
                   className={`${styles.chartTextArea} scrollable-panel`}
                   style={{ resize: 'none' }}
+                  placeholder={hasBaseAppChartText ? "Chart text from EMR" : "Paste the relevant chart notes here..."}
+                  readOnly={hasBaseAppChartText}
                 />
               ) : (
                 <TextArea
@@ -262,9 +288,10 @@ const EncounterSlider = ({
                   id="emr-chart-paste"
                   value={chartText}
                   onChange={e => onChartTextChange(e.target.value)}
-                  placeholder="Paste the relevant chart notes here..."
+                  placeholder={hasBaseAppChartText ? "Chart text from EMR" : "Paste the relevant chart notes here..."}
                   className={`${styles.chartTextArea} ${isEmrExpanded ? styles.isExpanded : ''} scrollable-panel`}
-                  disabled={isLoading}
+                  disabled={isLoading || hasBaseAppChartText}
+                  readOnly={hasBaseAppChartText}
                   key={isEmrExpanded ? 'emr-expanded' : 'emr-normal'}
                   isExpanded={isEmrExpanded}
                   rows={4}
@@ -292,6 +319,39 @@ const EncounterSlider = ({
       </aside>
     </>
   );
+};
+
+EncounterSlider.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  isEmrExpanded: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onToggleEmrExpanded: PropTypes.func.isRequired,
+  encounter: PropTypes.shape({
+    encounterNumber: PropTypes.string,
+    accountNumber: PropTypes.string,
+    insurance: PropTypes.string,
+    provider: PropTypes.string,
+    status: PropTypes.string,
+    dateOfService: PropTypes.string,
+    chartText: PropTypes.string
+  }),
+  providerCptCodes: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    modifiers: PropTypes.arrayOf(PropTypes.string),
+    units: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    description: PropTypes.string,
+    rationale: PropTypes.string
+  })),
+  providerIcdCodes: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    rationale: PropTypes.string
+  })),
+  chartText: PropTypes.string.isRequired,
+  onChartTextChange: PropTypes.func.isRequired,
+  onGenerate: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  hasBaseAppChartText: PropTypes.bool.isRequired
 };
 
 export default EncounterSlider;

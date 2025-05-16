@@ -94,12 +94,23 @@ class AIService:
 
             # If no complete objects found, try to fix common issues
             text = text.strip()
-            if text.endswith(','):
-                text = text[:-1]
-            if not text.endswith('}'):
-                text += '}'
-            if not text.endswith(']'):
+            
+            # Fix incomplete arrays
+            if text.count('[') > text.count(']'):
                 text += ']'
+            
+            # Fix incomplete objects
+            if text.count('{') > text.count('}'):
+                text += '}'
+            
+            # Fix trailing commas
+            text = re.sub(r',\s*([}\]])', r'\1', text)
+            
+            # Fix incomplete strings
+            text = re.sub(r'([^\\])"([^"]*?)(?=\s*[}\]])', r'\1"\2"', text)
+            
+            # Fix missing quotes around property names
+            text = re.sub(r'([{,])\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:', r'\1"\2":', text)
             
             return text
 
@@ -238,47 +249,60 @@ class AIService:
 
     def generate_analysis(self, chart_text: str) -> Dict[str, Any]:
         """Generate in-depth analysis of the medical chart."""
-        prompt = self.sectional_analysis_template.format(emr_text=chart_text)
-        result = self._call_gemini("Analysis", prompt, SectionalAnalysis)
-        
-        if "error" in result:
-            return {"error": result["error"]}
+        try:
+            prompt = self.sectional_analysis_template.format(emr_text=chart_text)
+            result = self._call_gemini("Analysis", prompt, SectionalAnalysis)
+            
+            if "error" in result:
+                print(f"Error in analysis result: {result['error']}")
+                return {"error": result["error"]}
 
-        analysis = result.get('analysis', {})
-        return {
-            'symptoms': [
-                {
-                    'description': item.text_mention,
-                    'rationale': item.rationale,
-                    'code': item.related_codes[0] if item.related_codes else None
-                }
-                for item in analysis.get('symptoms', [])
-            ],
-            'diagnoses': [
-                {
-                    'code': item.related_codes[0] if item.related_codes else None,
-                    'description': item.text_mention,
-                    'rationale': item.rationale
-                }
-                for item in analysis.get('diagnoses', [])
-            ],
-            'medications': [
-                {
-                    'description': item.text_mention,
-                    'rationale': item.rationale,
-                    'code': item.related_codes[0] if item.related_codes else None
-                }
-                for item in analysis.get('medications', [])
-            ],
-            'procedures': [
-                {
-                    'code': item.related_codes[0] if item.related_codes else None,
-                    'description': item.text_mention,
-                    'rationale': item.rationale
-                }
-                for item in analysis.get('procedures', [])
-            ]
-        }
+            # Ensure we have a valid result structure
+            if not isinstance(result, dict):
+                print(f"Invalid result type: {type(result)}")
+                return {"error": "Invalid response format"}
+
+            # Initialize default structure
+            analysis = {
+                'symptoms': [],
+                'diagnoses': [],
+                'medications': [],
+                'procedures': []
+            }
+
+            # Safely extract and transform each section
+            for section in ['symptoms', 'diagnoses', 'medications', 'procedures']:
+                items = result.get(section, [])
+                if not isinstance(items, list):
+                    print(f"Invalid {section} format: {type(items)}")
+                    continue
+
+                for item in items:
+                    try:
+                        if section in ['symptoms', 'medications']:
+                            analysis[section].append({
+                                'description': item.get('text_mention', ''),
+                                'rationale': item.get('rationale', ''),
+                                'code': item.get('related_codes', [''])[0] if item.get('related_codes') else None
+                            })
+                        else:  # diagnoses and procedures
+                            analysis[section].append({
+                                'code': item.get('related_codes', [''])[0] if item.get('related_codes') else None,
+                                'description': item.get('text_mention', ''),
+                                'rationale': item.get('rationale', '')
+                            })
+                    except Exception as e:
+                        print(f"Error processing {section} item: {str(e)}")
+                        continue
+
+            return analysis
+
+        except Exception as e:
+            print(f"Error in generate_analysis: {str(e)}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
+            return {"error": str(e)}
 
     def generate_rationale(self, cpt_codes: List[Dict], icd_codes: List[Dict]) -> Dict[str, Any]:
         """Generate coding rationale for selected codes."""
